@@ -2,6 +2,7 @@ package com.example.miller.cappcake;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -46,11 +47,27 @@ public class Login extends AppCompatActivity {
         TextView forgotPassword = (TextView) findViewById(R.id.forgotText);
         TextView skip = (TextView) findViewById(R.id.skipText);
 
+
+
+
         skip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent loginScreen = new Intent(Login.this, MainActivity.class );
                 startActivity(loginScreen);
+            }
+        });
+
+        signin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String username = userName.getText().toString();
+                String uPassword = password.getText().toString();
+
+                BackgroundWorker backgroundWorker = new BackgroundWorker(getApplicationContext());
+
+
             }
         });
 
@@ -62,8 +79,25 @@ public class Login extends AppCompatActivity {
             }
         });
 
+        class login extends AsyncTask<String, Integer, String>{
+
+            @Override
+            protected String doInBackground(String... params) {
+
+
+
+                return null;
+            }
+        }
+
+
+
 
 
 
     }
+
+
 }
+
+

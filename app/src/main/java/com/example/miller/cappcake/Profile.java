@@ -1,5 +1,7 @@
 package com.example.miller.cappcake;
 
+import com.google.gson.Gson;
+
 /**
  * Created by Miller on 12/6/2017.
  */
@@ -11,6 +13,7 @@ public class Profile {
     private String password;
     private String dateOfBirth;
     private String user;
+    private int id;
 
     public Profile() {
     }
@@ -46,13 +49,10 @@ public class Profile {
 
         Profile profile = (Profile) o;
 
-        if (!name.equals(profile.name)) return false;
-        if (!email.equals(profile.email)) return false;
-        return dateOfBirth.equals(profile.dateOfBirth);
+        if (name != null ? !name.equals(profile.name) : profile.name != null) return false;
+        return email != null ? email.equals(profile.email) : profile.email == null;
 
     }
-
-
 
     @Override
     public int hashCode() {
@@ -64,13 +64,17 @@ public class Profile {
 
     @Override
     public String toString() {
-        return "Profile{" +
-                "name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", dateOfBirth='" + dateOfBirth + '\'' +
-                ", user='" + user + '\'' +
-                '}';
+        //Serialization.
+        Gson gson = new Gson();
+        return gson.toJson(this);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {

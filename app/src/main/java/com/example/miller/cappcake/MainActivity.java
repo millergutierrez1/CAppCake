@@ -89,10 +89,6 @@ public class MainActivity extends AppCompatActivity
 
             //Start intent towards ProfileActivity
             Intent profileIntent = new Intent(getApplicationContext(), profileActivity.class);
-
-
-
-
             startActivityForResult(profileIntent, 1);
 
             // Handle the camera action
