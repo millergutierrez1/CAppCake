@@ -55,7 +55,7 @@
             android:layout_centerVertical="true"
             android:ems="10"
             android:hint="Password"
-            android:inputType="textPersonName"
+            android:inputType="textPassword"
             android:textAlignment="center" />
 
         <Button

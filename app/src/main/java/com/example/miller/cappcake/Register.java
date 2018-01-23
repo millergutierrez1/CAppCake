@@ -26,6 +26,7 @@ import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -50,8 +51,6 @@ public class Register extends AppCompatActivity {
     private int year, month, day;
     private boolean bolName, bolEmail, bolDate, bolUser, bolPassword;
     Gson gson = new Gson();
-    String dbResult = "";
-    Profile[] listDbProfiles;
     boolean registerPass = false;
     String userRegistration = "";
     ProgressDialog pd;
@@ -69,7 +68,6 @@ public class Register extends AppCompatActivity {
         userInput = (EditText) findViewById(R.id.userInput);
         passwordInput = (EditText) findViewById(R.id.passwordInput);
 
-
         Calendar c = Calendar.getInstance();
 
         year = c.get(Calendar.YEAR);
@@ -77,14 +75,11 @@ public class Register extends AppCompatActivity {
         day = c.get(Calendar.DAY_OF_MONTH);
 
 
-        //Inciamos la conexion al servior para comprobar correo y usuario
-
-
-
-
-
         /*
          *TextWatcher Name -> Control name input
+         *
+         * afterTextChanged -> Allows me to control tezt changes. And also,
+         * input types.
          */
 
         nameInput.addTextChangedListener(new TextWatcher() {
@@ -100,7 +95,6 @@ public class Register extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
 
                 String name = nameInput.getText().toString();
-
                 if (emptyText(name)) {
                     Log.d("NameInputChange:", "Empty");
                     nameInput.setError("el campo Nombre no puede estar vacio!");
@@ -110,6 +104,7 @@ public class Register extends AppCompatActivity {
                     nameInput.setError("Nombre muy largo! Inténtalo con uno mas pequeño");
                     bolName = false;
                 } else {
+                    Log.d("NAME_INPUT: ", "Valid Entry");
                     bolName = true;
                 }
             }
@@ -117,6 +112,9 @@ public class Register extends AppCompatActivity {
 
         /*
         * TextWatcher Email
+        *
+        * afterTextChanged -> Allows me to control tezt changes. And also,
+        * input types.
         */
 
         emailInput.addTextChangedListener(new TextWatcher() {
@@ -132,22 +130,22 @@ public class Register extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 String email = emailInput.getText().toString().trim();
 
+                //Regex to control email address input:
                 if (!email.matches("(\\W|^)[\\w.\\-]{0,25}@(\\w{0,25})\\.(com|net|\\w{0,5})\\.?(\\w{2,3})($)")) {
                     Log.d("EmailInputChange:", "Not Valid Email");
                     emailInput.setError("Inserta un email válido!");
                     bolEmail = false;
                 } else {
+                    Log.d("EmailInputChange:", "Valid Entry");
                     bolEmail = true;
-
-
                 }
-
-
             }
         });
 
         /*
         * TextWatched AgeInput
+        *
+        * afterTextChanged to control emptyText
         */
 
         ageInput.addTextChangedListener(new TextWatcher() {
@@ -162,13 +160,11 @@ public class Register extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 String age = ageInput.getText().toString();
+                //Only control emptyTExt
                 if (emptyText(age)) {
                     Log.d("EmptyAge", "Empty age");
-                } else if (!age.matches("\\d{4}\\-\\d{2}\\-\\d{2}")) {
-                    Log.d("AgeRegex: ", age + " is Invalid ");
-                    ageInput.setError("Formato Inválido (1989-12-31)");
-                    bolDate = false;
                 } else {
+                    Log.d("AGE_INPUT: ", "Valid");
                     bolDate = true;
                 }
 
@@ -177,19 +173,37 @@ public class Register extends AppCompatActivity {
 
         /*
         * Show Dialog Calendar  DATE of birth
+        *
+        * Create Calendar to ensure Data is formatted properly YYYY-MM-DD
+        *
+        * DatePickerDialog
+        *
          */
 
         ageInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                bolDate = true;
                 DatePickerDialog dialog = new DatePickerDialog(Register.this, android.R.style.Theme_Holo_Light_Dialog_MinWidth, mDataSetlistener, year, month, day);
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+                Calendar c = Calendar.getInstance();
+
+                //Sample date picker min age 12 -> 80
+                c.add(Calendar.YEAR, -12);
+                dialog.getDatePicker().setMaxDate(c.getTimeInMillis());
+                c.add(Calendar.YEAR, -80);
+                dialog.getDatePicker().setMinDate(c.getTimeInMillis());
                 dialog.show();
+                Log.d("DATE_DIALOG: ", "True");
+
             }
         });
 
         /*
         * TextWatcher - UserInput
+        *
+        * afterTextChanged control over char length
          */
 
 
@@ -212,9 +226,14 @@ public class Register extends AppCompatActivity {
                     userInput.setError("Mínimo 8 caracteres!");
                     bolUser = false;
 
+                } else if (user.contains(" ") || user.contains("$") || user.contains("*")) {
+                    Log.d("NameInputChange", "Spaces");
+                    userInput.setError("No puede contener espacios, '$' o '*'");
+                    bolUser = false;
                 } else {
                     userRegistration = user;
                     bolUser = true;
+                    Log.d("USER_INPUT: ", "Valid");
                 }
 
             }
@@ -222,6 +241,8 @@ public class Register extends AppCompatActivity {
 
         /*
         * TextWatcher - PasswordInput
+        *
+        * afterTextChanged pass length and force at least one upper case
         *
          */
 
@@ -247,7 +268,17 @@ public class Register extends AppCompatActivity {
                 } else if (!uppercase) {
                     passwordInput.setError("Debe contener al menos 1 letra mayúscula");
                     bolPassword = false;
-                } else {
+                } else if (pass.matches("(\\W)+(\\w)*|(\\s)+(\\w)*")) {
+                    passwordInput.setError("La Contraseña debe empezar con una letra");
+                    bolPassword = false;
+
+                } else if(pass.contains(" ")){
+                    passwordInput.setError("La Contraseña no puede tener espacios");
+                    bolPassword = false;
+                }
+
+                else {
+                    Log.d("PASSWORD_INPUT: ", "Valid");
                     bolPassword = true;
                 }
 
@@ -272,12 +303,15 @@ public class Register extends AppCompatActivity {
                         editTextisEmpty(ageInput) || editTextisEmpty(userInput) || editTextisEmpty(passwordInput)) {
 
                     Toast.makeText(Register.this, "Rellena todos los campos", Toast.LENGTH_LONG).show();
+                    Log.d("REGISTRATION_FIELDS: ", "Empty fields");
                     return;
-
                 }
+
+                // Control over booleans from textChanges
 
                 if (!bolDate || !bolName || !bolEmail || !bolPassword || !bolUser) {
                     System.out.println();
+                    Log.d("REGISTRATION_BOOLEANS: ", "FALSE");
                     return;
                 }
 
@@ -288,42 +322,38 @@ public class Register extends AppCompatActivity {
                 user.setUser(userInput.getText().toString());
                 user.setPassword(passwordInput.getText().toString());
 
-                SharedPreferences preferences = getSharedPreferences(CREDENTIALS, MODE_PRIVATE);
-
-
-                //JSON Formated. ToString is modified to gson
-                //("user1", "user@hotmail.com","testingpass", "1990-12-21", "user3" )
-                System.out.println(user);
-
+                Log.d("USER_INFO: ", user.toString());
 
                 registerPass = true;
+
+                /*
+                * AsyncTask to verify data input
+                 */
+
+                Log.d("DATA_VERIFICATION: ", "Started");
+
                 //new userExistsDB().execute("http://10.0.2.2:8080/");
                 new userExistsDB().execute("http://mgappssupport.com/");
-
-                //System.out.println("HTTP_Response"+asyncOutput);
-
-                SharedPreferences.Editor editor = preferences.edit();
-
-                //Make a value kay-pair We'll be using profile1
-                editor.putString("profile1", user.getName() + "-" + user.getEmail() + "-" + user.getPassword() + "-" + user.getDateOfBirth() + "-" + user.getUser());
-                editor.commit();
-
 
             }
         });
 
+        /*
+        * DatePicker Configuration:
+        */
+
         mDataSetlistener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-
-                String date = year + "-" + month + "-" + dayOfMonth;
+                String date = year + "-" + month + 1 + "-" + dayOfMonth;
 
                 ageInput.setText(date);
-                bolDate = true;
-                Log.d("DatePicker:", year + "-" + month + "-" + dayOfMonth);
+                Log.d("DatePicker:", year + "-" + month + 1 + "-" + dayOfMonth);
 
 
             }
+
+
         };
     }
 
@@ -336,6 +366,8 @@ public class Register extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
+
+            //progressDialog configuration
             super.onPreExecute();
             pd = new ProgressDialog(Register.this);
             pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -343,9 +375,14 @@ public class Register extends AppCompatActivity {
             pd.setMessage("Registrando usuario");
             pd.setProgress(0);
             pd.show();
+            Log.d("userExistsDB - async: ", "Started progressDialog");
 
 
         }
+
+        /*
+        * Need to use a handler as can't use Toasts while running an async thread.
+         */
 
         private final Handler handler = new Handler() {
             public void handleMessage(Message msg) {
@@ -358,6 +395,7 @@ public class Register extends AppCompatActivity {
         protected String doInBackground(String... params) {
             BufferedReader br = null;
             HttpURLConnection connection = null;
+
             try {
                 Log.d("POST_UserValidaton   ", "True");
 
@@ -371,7 +409,7 @@ public class Register extends AppCompatActivity {
                 connection.setDoOutput(true);
                 connection.connect();
 
-                String httpData = user.getUser() + '-' + user.getEmail();
+                String httpData = user.getUser() + "$**$" + user.getEmail();
                 exceptionError = false;
 
                 OutputStream os = connection.getOutputStream();
@@ -421,13 +459,13 @@ public class Register extends AppCompatActivity {
             } finally {
                 if (connection != null) {
                     Log.d("CONNECTION:", "Closing connection");
-                    System.out.println("NetworkError" + exceptionError);
+                    Log.d("NetworkError: ", String.valueOf(exceptionError));
+
                     if (exceptionError) {
                         Message msg = handler.obtainMessage();
                         msg.arg1 = 1;
                         handler.sendMessage(msg);
-                        System.out.println("Cancelled: " + isCancelled());
-                        System.out.println("toast");
+                        Log.d("CANCELLED: ", String.valueOf(isCancelled()));
                     }
                     connection.disconnect();
                 }
@@ -450,6 +488,7 @@ public class Register extends AppCompatActivity {
         @Override
         protected void onProgressUpdate(Integer... values) {
 
+            //Control progressDialogue -> 0
             super.onProgressUpdate(values);
             int progress = values[0];
             pd.setProgress(progress);
@@ -458,44 +497,58 @@ public class Register extends AppCompatActivity {
         @Override
         protected void onPostExecute(String builder) {
             super.onPostExecute(null);
-            pd.dismiss();
 
-
-            if (httpResponse != null) {
-                if (!httpResponse.contains("User Doesn't")) {
-                    userInput.setError("Usuario Ya existe!");
-                    bolUser = false;
-
-                    cancel(true);
-
-
-                }
-                if (!httpResponse.contains("Email Doesn't")) {
-                    emailInput.setError("Email ya existe!");
-                    bolEmail=false;
-                    cancel(true);
-
+            try {
+                if (exceptionError) {
+                    pd.dismiss();
+                    finish();
+                    return;
                 }
 
+                if (httpResponse != null) {
+                    if (!httpResponse.contains("User Doesn't")) {
+                        userInput.setError("Usuario Ya existe!");
+                        bolUser = false;
+                        cancel(true);
+                        Log.d("USERINPUT-THREAD: ", "User Exists");
 
+
+                    }
+                    if (!httpResponse.contains("Email Doesn't")) {
+                        emailInput.setError("Email ya existe!");
+                        bolEmail = false;
+                        cancel(true);
+                        Log.d("EMAILINPUT-THREAD: ", "Email Exists");
+
+                    }
+                }
+
+                if (isCancelled()) {
+
+                    // if cancelled (above code) dismisses the progress dialog.
+                    System.out.println("Date" + bolDate);
+                    System.out.println("Email" + bolEmail);
+                    System.out.println("Name" + bolName);
+                    System.out.println("User" + bolUser);
+                    System.out.println("Password" + bolPassword);
+                    pd.dismiss();
+                    return;
+
+                }
+
+            } catch (final IllegalArgumentException e) {
+
+
+                // Handle or log or ignore
+            } finally {
+
+                Register.this.pd = null;
             }
 
-            if (isCancelled()){
-                System.out.println("Date"+bolDate);
-                System.out.println("Email"+bolEmail);
-                System.out.println("Name"+bolName);
-                System.out.println("User"+bolUser);
-                System.out.println("Password"+bolPassword);
-
-                return;
-
-
-
-            }
-            Intent loginScreen = new Intent(Register.this, Login.class);
-            startActivity(loginScreen);
-
-
+            //I start a new AsyncTask from the OnPostExecute -> All data has been
+            // verified ad can be registered to the appropriate DB entry.
+            //new registrationTask().execute("http://10.0.2.2:8080/");
+            new registrationTask().execute("http://mgappssupport.com/");
         }
     }
 
@@ -503,7 +556,48 @@ public class Register extends AppCompatActivity {
     Registration AsyncTask
      */
 
-    public class registrationTask extends AsyncTask<String, String, String> {
+    public class registrationTask extends AsyncTask<String, Integer, String> {
+
+        String httpResponse2 = "";
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pd = new ProgressDialog(Register.this);
+            pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            pd.setMax(10);
+            pd.setMessage("Registrando usuario");
+            pd.setProgress(0);
+            pd.show();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            // After the registration is successful -> goes back to Signin
+
+
+            if (httpResponse2.contains("User not created")) {
+                Log.d("ERROR", "Usuario no creado");
+                pd.dismiss();
+                return;
+            }
+
+            Log.d("REGSTRATION: ", "Successful");
+
+            Intent loginScreen = new Intent(Register.this, Login.class);
+            startActivity(loginScreen);
+
+            pd.dismiss();
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            int progress = values[0];
+            pd.setProgress(progress);
+        }
 
         @Override
         protected String doInBackground(String... params) {
@@ -524,6 +618,7 @@ public class Register extends AppCompatActivity {
                     connection.setReadTimeout(10000);
                     connection.setDoOutput(true);
                     connection.connect();
+
 
                     String httpData = user.toString();
 
@@ -558,21 +653,25 @@ public class Register extends AppCompatActivity {
 
                         brResponse.close();
 
-                        Log.d("HTTP_RESPONSE", sbRespone.toString());
-                        return sbRespone.toString();
+                        httpResponse2 = sbRespone.toString();
+                        Log.d("HTTP_RESPONSE", httpResponse2);
+                        publishProgress(10);
+                        return httpResponse2;
 
                     } else {
 
+                        Log.d("REGISTRATION: ", "Unsuccessful");
                         Toast.makeText(getApplicationContext(), "Usuario no pudo ser insertado", Toast.LENGTH_LONG).show();
                     }
-
                 }
             } catch (MalformedURLException e) {
-
+                Log.d("MALFORMED-URL: ", e.getMessage());
                 e.printStackTrace();
             } catch (UnsupportedEncodingException e) {
+                Log.d("UNSUPPORTED-URL: ", e.getMessage());
                 e.printStackTrace();
             } catch (IOException e) {
+                Log.d("IO-EXCEPTION: ", e.getMessage());
                 e.printStackTrace();
             } finally {
                 if (connection != null) {
@@ -580,13 +679,13 @@ public class Register extends AppCompatActivity {
                     connection.disconnect();
 
                 }
-
                 if (br != null) {
                     try {
 
                         br.close();
                         Log.d("BUFFERED-READER:", "CLOSED");
                     } catch (IOException e) {
+                        Log.d("IO: ", e.getMessage());
                         e.printStackTrace();
                     }
 
