@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import java.text.DecimalFormat;
 
 import java.util.List;
 
@@ -62,13 +63,15 @@ public class CappAdapter extends RecyclerView.Adapter<CappAdapter.ViewHolder> {
         }
 
 
-        holder.cappRating.setRating((float) ((long)cappItems.getRanking()/cappItems.getRanking_count()));
+        double avg = round(cappItems.getRanking()/cappItems.getRanking_count(),1);
+        holder.cappRating.setRating((float) avg);
 
         Log.d("RATING",String.valueOf(cappItems.getRanking()));
         Log.d("RATING_COUNT",String.valueOf(cappItems.getRanking_count()));
         Log.d("RATING_AVG_CARDVIEW",String.valueOf(cappItems.getRanking()/cappItems.getRanking_count()));
         if(cappItems.getRanking_count() != 0){
-            holder.ratingCount.setText("Votos: "+cappItems.getRanking()/cappItems.getRanking_count());
+
+            holder.ratingCount.setText("Puntuación: "+avg);
         } else {
             holder.ratingCount.setText("No hay votos!");
         }
@@ -89,6 +92,11 @@ public class CappAdapter extends RecyclerView.Adapter<CappAdapter.ViewHolder> {
             }
         });
 
+    }
+
+    public static double round (double value, int precision) {
+        int scale = (int) Math.pow(10, precision);
+        return (double) Math.round(value * scale) / scale;
     }
 
     @Override

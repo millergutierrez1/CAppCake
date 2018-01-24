@@ -48,11 +48,13 @@ public class RecipeDetails extends AppCompatActivity {
     EditText multiline;
     String httpData;
     ProgressDialog pd;
+    boolean hasVoted;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe_details);
+        hasVoted = false;
 
 
         titleDetails = (TextView) findViewById(R.id.titleDetails);
@@ -75,8 +77,6 @@ public class RecipeDetails extends AppCompatActivity {
 
         cappImage = (ImageView) findViewById(R.id.capp_image);
 
-
-        Intent recipes = getIntent();
 
         Gson gson = new Gson();
 
@@ -114,7 +114,7 @@ public class RecipeDetails extends AppCompatActivity {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float ratingResults, boolean fromUser) {
 
-                r.setRanking(ratingResults+r.getRanking());
+                r.setRanking(ratingResults + r.getRanking());
                 Log.d("RATING_LISTENER", String.valueOf(ratingResults));
 
 
@@ -133,12 +133,22 @@ public class RecipeDetails extends AppCompatActivity {
                 //Log.d("RATING_COUNT", String.valueOf(r.getRanking_count()));
 
                 //new SaveRating().execute("http://10.0.2.2:8080/");
-                new SaveRating().execute("http://mgappssupport.com/");
+                //
+                //
+                if (!hasVoted) {
+                    hasVoted=true;
+                    new SaveRating().execute("http://mgappssupport.com/");
+
+
+                } else {
+                    Toast.makeText(RecipeDetails.this, "Ya has votado " + rating.getRating() + " estrallas!", Toast.LENGTH_SHORT).show();
+                }
 
 
 
             }
         });
+
 
     }
 
@@ -201,9 +211,9 @@ public class RecipeDetails extends AppCompatActivity {
                 OutputStream os = connection.getOutputStream();
                 BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
 
-                r.setRanking_count(r.getRanking_count()+1);
+                r.setRanking_count(r.getRanking_count() + 1);
                 httpData = gson.toJson(r);
-                Log.d("CONNECTION_INFO", "Ranking: "+r.getRanking()+"- RankingCount"+r.getRanking_count());
+                Log.d("CONNECTION_INFO", "Ranking: " + r.getRanking() + "- RankingCount" + r.getRanking_count());
                 bw.write(httpData);
 
                 //Release resources
@@ -275,7 +285,7 @@ public class RecipeDetails extends AppCompatActivity {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
 
-            if(responseCode==200){
+            if (responseCode == 200) {
                 pd.dismiss();
             }
 

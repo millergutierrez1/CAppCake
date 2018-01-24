@@ -176,12 +176,14 @@
 
                         <RatingBar
                             android:id="@+id/ratingBar"
+                            style="@style/Widget.AppCompat.RatingBar"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignStart="@+id/ingredients_biscuits"
                             android:layout_below="@+id/capp_image"
                             android:layout_marginTop="20dp"
                             android:numStars="5" />
+
 
                         <Button
                             android:id="@+id/button_rating"

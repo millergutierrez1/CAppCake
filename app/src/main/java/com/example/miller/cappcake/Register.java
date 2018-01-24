@@ -45,7 +45,7 @@ import java.util.Calendar;
 public class Register extends AppCompatActivity {
 
     final String CREDENTIALS = "userPass";
-    String asyncOutput;
+    String ageDb;
     Profile user = new Profile();
     private DatePickerDialog.OnDateSetListener mDataSetlistener;
     private int year, month, day;
@@ -54,6 +54,7 @@ public class Register extends AppCompatActivity {
     boolean registerPass = false;
     String userRegistration = "";
     ProgressDialog pd;
+
 
     EditText nameInput, emailInput, ageInput, userInput, passwordInput;
 
@@ -345,10 +346,11 @@ public class Register extends AppCompatActivity {
         mDataSetlistener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                String date = year + "-" + month + 1 + "-" + dayOfMonth;
-
+                month++;
+                String date = dayOfMonth + "-" + month + "-" + year;
+                ageDb = year + "-" + month + "-" + dayOfMonth;
                 ageInput.setText(date);
-                Log.d("DatePicker:", year + "-" + month + 1 + "-" + dayOfMonth);
+                Log.d("DatePicker:", year + "-" + month+ "-" + dayOfMonth);
 
 
             }
