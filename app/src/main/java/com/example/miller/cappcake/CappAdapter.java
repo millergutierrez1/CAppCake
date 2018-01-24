@@ -50,7 +50,7 @@ public class CappAdapter extends RecyclerView.Adapter<CappAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
 
 
-        final Recipes cappItems = capplist2.get(position);
+        Recipes cappItems = capplist2.get(position);
 
         final int position2 = position;
 
@@ -60,7 +60,13 @@ public class CappAdapter extends RecyclerView.Adapter<CappAdapter.ViewHolder> {
         if(cappItems.getUrlImage()!=""){
             with(context).load(cappItems.getUrlImage()).resize(720 ,600).centerInside().into(holder.cappImage);
         }
+
+
         holder.cappRating.setRating((float) ((long)cappItems.getRanking()/cappItems.getRanking_count()));
+
+        Log.d("RATING",String.valueOf(cappItems.getRanking()));
+        Log.d("RATING_COUNT",String.valueOf(cappItems.getRanking_count()));
+        Log.d("RATING_AVG_CARDVIEW",String.valueOf(cappItems.getRanking()/cappItems.getRanking_count()));
         if(cappItems.getRanking_count() != 0){
             holder.ratingCount.setText("Votos: "+cappItems.getRanking()/cappItems.getRanking_count());
         } else {

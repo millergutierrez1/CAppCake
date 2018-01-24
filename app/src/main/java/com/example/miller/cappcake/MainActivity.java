@@ -59,8 +59,8 @@ public class MainActivity extends AppCompatActivity
 
         setContentView(R.layout.activity_main);
 
-        new loadRecipes().execute("http://10.0.2.2:8080/");
-        //new loadRecipes().execute("https://mgappssupport.com/");
+        // new loadRecipes().execute("http://10.0.2.2:8080/");
+        new loadRecipes().execute("https://mgappssupport.com/");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -101,8 +101,8 @@ public class MainActivity extends AppCompatActivity
 
     }
     public void refreshItems() {
-        new loadRecipes().execute("http://10.0.2.2:8080/");
-        //new loadRecipes().execute("https://mgappssupport.com/");
+        //new loadRecipes().execute("http://10.0.2.2:8080/");
+        new loadRecipes().execute("https://mgappssupport.com/");
         Log.d("REFRESHPAGE","True");
 
     }

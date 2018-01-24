@@ -112,10 +112,10 @@ public class RecipeDetails extends AppCompatActivity {
 
         rating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
-            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+            public void onRatingChanged(RatingBar ratingBar, float ratingResults, boolean fromUser) {
 
-                r.setRanking(rating);
-                Log.d("RATING_LISTENER", String.valueOf(rating));
+                r.setRanking(ratingResults+r.getRanking());
+                Log.d("RATING_LISTENER", String.valueOf(ratingResults));
 
 
             }
@@ -132,8 +132,8 @@ public class RecipeDetails extends AppCompatActivity {
                 Log.d("RATING_INPUT", String.valueOf(r.getRanking()));
                 //Log.d("RATING_COUNT", String.valueOf(r.getRanking_count()));
 
-                new SaveRating().execute("http://10.0.2.2:8080/");
-
+                //new SaveRating().execute("http://10.0.2.2:8080/");
+                new SaveRating().execute("http://mgappssupport.com/");
 
 
 
@@ -203,7 +203,7 @@ public class RecipeDetails extends AppCompatActivity {
 
                 r.setRanking_count(r.getRanking_count()+1);
                 httpData = gson.toJson(r);
-                Log.d("CONNECTION_INFO", httpData);
+                Log.d("CONNECTION_INFO", "Ranking: "+r.getRanking()+"- RankingCount"+r.getRanking_count());
                 bw.write(httpData);
 
                 //Release resources
