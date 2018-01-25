@@ -57,6 +57,7 @@ public class RecipeDetails extends AppCompatActivity {
         hasVoted = false;
 
 
+
         titleDetails = (TextView) findViewById(R.id.titleDetails);
 
         titleIngredients = (TextView) findViewById(R.id.title_ingredients);
@@ -73,6 +74,7 @@ public class RecipeDetails extends AppCompatActivity {
         instructions_extra = (TextView) findViewById(R.id.instru_extras);
 
         rating = (RatingBar) findViewById(R.id.ratingBar);
+        rating.setIsIndicator(false);
         save_rating = (Button) findViewById(R.id.button_rating);
 
         cappImage = (ImageView) findViewById(R.id.capp_image);
@@ -138,6 +140,7 @@ public class RecipeDetails extends AppCompatActivity {
                 if (!hasVoted) {
                     hasVoted=true;
                     new SaveRating().execute("http://mgappssupport.com/");
+                    rating.setIsIndicator(true);
 
 
                 } else {
@@ -167,13 +170,7 @@ public class RecipeDetails extends AppCompatActivity {
                 if (msg.arg1 == 1) {
                     Toast.makeText(getApplicationContext(), "Error de Conexión", Toast.LENGTH_LONG).show();
                 } else if (msg.arg1 == 2) {
-                    Toast.makeText(getApplicationContext(), "Usuario/Contraseña erroneo!", Toast.LENGTH_LONG).show();
-                } else if (msg.arg1 == 3) {
-                    Toast.makeText(getApplicationContext(), "No has iniciado sesión", Toast.LENGTH_LONG).show();
-                } else if (msg.arg1 == 4) {
-                    Toast.makeText(getApplicationContext(), "Cambios Guardados!", Toast.LENGTH_LONG).show();
-                } else if (msg.arg1 == 5) {
-                    Toast.makeText(getApplicationContext(), "Cambios No Realizados", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Votación Exitosa!", Toast.LENGTH_LONG).show();
                 }
 
             }
@@ -286,6 +283,9 @@ public class RecipeDetails extends AppCompatActivity {
             super.onPostExecute(s);
 
             if (responseCode == 200) {
+                Message msg = handler.obtainMessage();
+                msg.arg1 = 2;
+                handler.sendMessage(msg);
                 pd.dismiss();
             }
 

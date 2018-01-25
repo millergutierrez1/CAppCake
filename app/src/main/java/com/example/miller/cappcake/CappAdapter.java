@@ -76,6 +76,11 @@ public class CappAdapter extends RecyclerView.Adapter<CappAdapter.ViewHolder> {
             holder.ratingCount.setText("No hay votos!");
         }
 
+        int count = (int) cappItems.getRanking_count();
+
+        holder.v_count.setText("("+count+")");
+
+
 
 
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
@@ -106,7 +111,7 @@ public class CappAdapter extends RecyclerView.Adapter<CappAdapter.ViewHolder> {
 
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-        public TextView cappTitle,ratingCount;
+        public TextView cappTitle,ratingCount, v_count;
         public ImageView cappImage;
         public RatingBar cappRating;
 
@@ -121,8 +126,10 @@ public class CappAdapter extends RecyclerView.Adapter<CappAdapter.ViewHolder> {
             cappImage = (ImageView) itemView.findViewById((R.id.cappImage));
             cappRating = (RatingBar) itemView.findViewById(R.id.cappRating);
 
+            v_count = (TextView) itemView.findViewById(R.id.v_count);
             linearLayout = (LinearLayout) itemView.findViewById(R.id.linearLayout);
             ratingCount = (TextView) itemView.findViewById(R.id.voting_count);
+
 
         }
     }

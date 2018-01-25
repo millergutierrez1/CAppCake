@@ -10,18 +10,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <android.support.design.widget.CollapsingToolbarLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:contentScrim="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:toolbarId="@+id/toolbar">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"></android.support.v7.widget.Toolbar>
-        </android.support.design.widget.CollapsingToolbarLayout>
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbarProfile"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/holo_orange_dark">
+
+            <TextView
+                android:id="@+id/custom_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/fjalla_one"
+                android:text="Perfil"
+                android:textAlignment="center"
+                android:textAllCaps="true"
+                android:textColor="#FFFFFF"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+        </android.support.v7.widget.Toolbar>
+
+
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.NestedScrollView
@@ -50,10 +59,11 @@
 
                     <TextView
                         android:id="@+id/textViewProfileName"
-                        android:layout_width="wrap_content"
+                        android:layout_width="118dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.75"
-                        android:text="Name:"
+                        android:fontFamily="@font/fjalla_one"
+                        android:text="Nombre:"
                         android:textAlignment="viewStart"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -63,7 +73,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:ems="10"
-                        android:inputType="textPersonName" />
+                        android:fontFamily="@font/oswald"
+                        android:inputType="textPersonName"
+                        android:textSize="16sp" />
 
                 </LinearLayout>
 
@@ -75,9 +87,10 @@
 
                     <TextView
                         android:id="@+id/textViewEmail"
-                        android:layout_width="wrap_content"
+                        android:layout_width="87dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="7.61"
+                        android:fontFamily="@font/fjalla_one"
                         android:text="Email:"
                         android:textAlignment="viewStart"
                         android:textSize="18sp"
@@ -88,7 +101,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:ems="10"
-                        android:inputType="textWebEmailAddress" />
+                        android:fontFamily="@font/oswald"
+                        android:inputType="textWebEmailAddress"
+                        android:textSize="16sp" />
 
                 </LinearLayout>
 
@@ -100,9 +115,10 @@
 
                     <TextView
                         android:id="@+id/password"
-                        android:layout_width="wrap_content"
+                        android:layout_width="102dp"
                         android:layout_height="wrap_content"
-                        android:text="Password:"
+                        android:fontFamily="@font/fjalla_one"
+                        android:text="Contraseña"
                         android:textAlignment="viewStart"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -112,7 +128,9 @@
                         android:layout_width="199dp"
                         android:layout_height="wrap_content"
                         android:ems="10"
-                        android:inputType="textPassword" />
+                        android:fontFamily="@font/oswald"
+                        android:inputType="textPassword"
+                        android:textSize="16sp" />
 
                 </LinearLayout>
 
@@ -128,6 +146,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:elevation="21dp"
+                        android:fontFamily="@font/fjalla_one"
                         android:text="Save"
                         tools:layout_editor_absoluteX="112dp"
                         tools:layout_editor_absoluteY="382dp" />

@@ -17,7 +17,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginTop="26dp"
             android:layout_weight="1"
-            android:fontFamily="sans-serif-smallcaps"
+            android:fontFamily="@font/fjalla_one"
             android:padding="15dp"
             android:paddingLeft="25dp"
             android:paddingRight="25dp"
@@ -85,7 +85,7 @@
                             android:layout_marginRight="10dp"
                             android:layout_marginTop="8dp"
                             android:layout_weight="1"
-                            android:fontFamily="sans-serif-smallcaps"
+                            android:fontFamily="@font/fjalla_one"
                             android:padding="10dp"
                             android:text="Instrucciones"
                             android:textAlignment="center"
@@ -102,7 +102,7 @@
                             android:layout_marginRight="10dp"
                             android:layout_marginTop="16dp"
                             android:layout_weight="1"
-                            android:fontFamily="sans-serif-smallcaps"
+                            android:fontFamily="@font/fjalla_one"
                             android:padding="10dp"
                             android:text="Ingredientes"
                             android:textAlignment="center"
@@ -119,6 +119,7 @@
                             android:layout_marginBottom="5dp"
                             android:layout_marginLeft="10dp"
                             android:layout_marginRight="10dp"
+                            android:fontFamily="@font/oswald"
                             android:maxLines="10"
                             android:textAlignment="viewStart" />
 
@@ -131,16 +132,18 @@
                             android:layout_marginBottom="5dp"
                             android:layout_marginLeft="10dp"
                             android:layout_marginRight="10dp"
+                            android:fontFamily="@font/oswald"
                             android:textAlignment="viewStart" />
 
                         <TextView
                             android:id="@+id/ingredients_extra"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_below="@+id/ingredients_frosting"
                             android:layout_marginLeft="10dp"
                             android:layout_marginRight="10dp"
-                            android:textAlignment="viewStart"
-                            android:layout_below="@+id/ingredients_frosting" />
+                            android:fontFamily="@font/oswald"
+                            android:textAlignment="viewStart" />
 
                         <TextView
                             android:id="@+id/instru_biscuit"
@@ -150,6 +153,7 @@
                             android:layout_marginBottom="5dp"
                             android:layout_marginLeft="10dp"
                             android:layout_marginRight="10dp"
+                            android:fontFamily="@font/oswald"
                             android:textAlignment="viewStart" />
 
                         <TextView
@@ -161,6 +165,7 @@
                             android:layout_marginBottom="5dp"
                             android:layout_marginLeft="10dp"
                             android:layout_marginRight="10dp"
+                            android:fontFamily="@font/oswald"
                             android:textAlignment="viewStart" />
 
                         <TextView
@@ -172,6 +177,7 @@
                             android:layout_marginBottom="5dp"
                             android:layout_marginLeft="10dp"
                             android:layout_marginRight="10dp"
+                            android:fontFamily="@font/oswald"
                             android:textAlignment="viewStart" />
 
                         <RatingBar
@@ -192,8 +198,9 @@
                             android:layout_height="wrap_content"
                             android:layout_alignEnd="@+id/title_ingredients"
                             android:layout_alignTop="@+id/ratingBar"
+                            android:fontFamily="@font/oswald"
                             android:text="Valorar"
-                            android:textSize="12sp" />
+                            android:textSize="13sp" />
 
 
                     </RelativeLayout>

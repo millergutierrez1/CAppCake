@@ -16,8 +16,13 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            android:background="@android:color/holo_orange_dark"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+
+        </android.support.v7.widget.Toolbar>
+
+
+
 
     </android.support.design.widget.AppBarLayout>
 

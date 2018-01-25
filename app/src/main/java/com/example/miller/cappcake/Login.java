@@ -171,6 +171,7 @@ public class Login extends AppCompatActivity {
 
 
                 ed.clear();
+
                 ed.putString("loggedin",usernameForm);
                 ed.commit();
                 pd.dismiss();

@@ -3,6 +3,7 @@ package com.example.miller.cappcake;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,6 +20,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -41,12 +44,14 @@ public class MainActivity extends AppCompatActivity
 
     SharedPreferences afterLogin;
     String loggedIn_value;
+    TextView userName;
+    NavHeader nav;
 
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
 
     private List<Recipes> cappList = new ArrayList<>();
-    int countpost=0;
+    int countpost = 0;
 
     ProgressDialog pd;
 
@@ -55,19 +60,22 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
         setContentView(R.layout.activity_main);
-
         // new loadRecipes().execute("http://10.0.2.2:8080/");
         new loadRecipes().execute("https://mgappssupport.com/");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        afterLogin= getSharedPreferences("USER_LOGGEDIN", MODE_PRIVATE);
-        loggedIn_value = String.valueOf(afterLogin.getAll());
+        if(getSupportActionBar()!=null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setTitle("");
 
+        }
+
+        afterLogin = getSharedPreferences("USER_LOGGEDIN", MODE_PRIVATE);
+        loggedIn_value = String.valueOf(afterLogin.getAll());
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -77,15 +85,19 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
         navigationView.setNavigationItemSelectedListener(this);
 
+
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+
 
 
 
         /*
         * Handle the swipe refresh -> Call te load items within the refreshItems
         */
+
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -99,11 +111,19 @@ public class MainActivity extends AppCompatActivity
 
 
 
+
+
     }
+
+
+
+
+
+
     public void refreshItems() {
         //new loadRecipes().execute("http://10.0.2.2:8080/");
         new loadRecipes().execute("https://mgappssupport.com/");
-        Log.d("REFRESHPAGE","True");
+        Log.d("REFRESHPAGE", "True");
 
     }
 
@@ -117,10 +137,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
-
-
-    public class loadRecipes extends AsyncTask<String, Integer, String>{
+    public class loadRecipes extends AsyncTask<String, Integer, String> {
 
         StringBuilder sb = new StringBuilder();
         StringBuilder sbRespone = new StringBuilder();
@@ -132,7 +149,7 @@ public class MainActivity extends AppCompatActivity
             super.onPreExecute();
 
             pd = new ProgressDialog(MainActivity.this);
-            pd.setProgressStyle(ProgressDialog.STYLE_SPINNER    );
+            pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             pd.setMax(10);
             pd.setMessage("Cargando Recetas...");
             pd.setProgress(0);
@@ -141,9 +158,9 @@ public class MainActivity extends AppCompatActivity
 
         private final Handler handler = new Handler() {
             public void handleMessage(Message msg) {
-                if (msg.arg1 == 1){
+                if (msg.arg1 == 1) {
                     Toast.makeText(getApplicationContext(), "Error de Conexión", Toast.LENGTH_LONG).show();
-                } else if(msg.arg1==2){
+                } else if (msg.arg1 == 2) {
                     Toast.makeText(getApplicationContext(), "Usuario/Contraseña erroneo!", Toast.LENGTH_LONG).show();
                 }
 
@@ -176,13 +193,14 @@ public class MainActivity extends AppCompatActivity
                     }
                     httpResponse = sbRespone.toString().trim();
                     Log.d("HTTP_RESPONSE", httpResponse);
-                    Log.d("SIZE: PRE GSON ",String.valueOf(cappList.size()));
+                    Log.d("SIZE: PRE GSON ", String.valueOf(cappList.size()));
 
                     Gson gson = new Gson();
 
-                    Type capplistType = new TypeToken<ArrayList<Recipes>>(){}.getType();
-                    cappList = gson.fromJson(httpResponse,capplistType);
-                    Log.d("SIZE: POST GSON ",String.valueOf(cappList.size()));
+                    Type capplistType = new TypeToken<ArrayList<Recipes>>() {
+                    }.getType();
+                    cappList = gson.fromJson(httpResponse, capplistType);
+                    Log.d("SIZE: POST GSON ", String.valueOf(cappList.size()));
 
                     brResponse.close();
 
@@ -211,7 +229,7 @@ public class MainActivity extends AppCompatActivity
                         Message msg = handler.obtainMessage();
                         msg.arg1 = 1;
                         handler.sendMessage(msg);
-                        Log.d("CANCELLED",String.valueOf(isCancelled()));
+                        Log.d("CANCELLED", String.valueOf(isCancelled()));
                     }
                     connection.disconnect();
                 }
@@ -239,23 +257,23 @@ public class MainActivity extends AppCompatActivity
         * Recycler View Configuration
          */
 
-        if(exceptionError){
+            if (exceptionError) {
+                pd.dismiss();
+                finish();
+            }
+
+            if (!cappList.isEmpty()) {
+                recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+                recyclerView.setHasFixedSize(true);
+                recyclerView.setLayoutManager(new LinearLayoutManager(getApplication()));
+                adapter = new CappAdapter(getApplicationContext(), cappList);
+                recyclerView.setAdapter(adapter);
+            }
+
             pd.dismiss();
-            finish();
-        }
 
-        if(!cappList.isEmpty()){
-            recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-            recyclerView.setHasFixedSize(true);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getApplication()));
-            adapter = new CappAdapter(getApplicationContext(), cappList);
-            recyclerView.setAdapter(adapter);
-        }
-
-        pd.dismiss();
-
-        countpost++;
-        Log.d("POST-EXECUTE ITEMS", String.valueOf(countpost));
+            countpost++;
+            Log.d("POST-EXECUTE ITEMS", String.valueOf(countpost));
 
         }
     }
@@ -265,10 +283,10 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if(loggedIn_value.contains("loggedin")){
-            Toast.makeText(this, "Has inicado sesión correctamente!", Toast.LENGTH_SHORT).show();
+        } else if (loggedIn_value.contains("loggedin")) {
 
-        } else{
+
+        } else {
             super.onBackPressed();
         }
     }
@@ -291,6 +309,8 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.action_settings) {
             return true;
         }
+
+
 
         return super.onOptionsItemSelected(item);
     }
@@ -320,7 +340,6 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
 
 
 }

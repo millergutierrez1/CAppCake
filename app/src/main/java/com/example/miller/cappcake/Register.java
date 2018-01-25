@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,14 +13,18 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
+
 
 
 import com.google.gson.Gson;
@@ -54,9 +59,11 @@ public class Register extends AppCompatActivity {
     boolean registerPass = false;
     String userRegistration = "";
     ProgressDialog pd;
+    Toolbar toolbarRegister;
 
 
     EditText nameInput, emailInput, ageInput, userInput, passwordInput;
+    TextView registerTitle;
 
 
     @Override
@@ -69,11 +76,25 @@ public class Register extends AppCompatActivity {
         userInput = (EditText) findViewById(R.id.userInput);
         passwordInput = (EditText) findViewById(R.id.passwordInput);
 
+        toolbarRegister = (Toolbar) findViewById(R.id.toolbarRegister);
+        setSupportActionBar(toolbarRegister);
         Calendar c = Calendar.getInstance();
+
+        registerTitle = (TextView) findViewById(R.id.registerTitle);
 
         year = c.get(Calendar.YEAR);
         month = c.get(Calendar.MONTH);
         day = c.get(Calendar.DAY_OF_MONTH);
+
+        if(getSupportActionBar()!=null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setTitle("");
+
+        }
+
+
+        //Typeface fonts = Typeface.createFromAsset(getAssets(),"font/fjalla_one.xml");
 
 
         /*
@@ -359,6 +380,14 @@ public class Register extends AppCompatActivity {
         };
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId()==android.R.id.home){
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     public class userExistsDB extends AsyncTask<String, Integer, String> {
         StringBuilder sb = new StringBuilder();

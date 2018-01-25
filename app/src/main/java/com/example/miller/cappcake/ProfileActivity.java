@@ -9,12 +9,15 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 
 import com.google.gson.Gson;
 
@@ -39,6 +42,7 @@ public class ProfileActivity extends AppCompatActivity {
     Intent intent;
     Profile user = new Profile();
     ProgressDialog pd;
+    Toolbar toolbarProfile;
 
     Button saveButton;
     String httpData;
@@ -51,6 +55,16 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile);
 
+
+        toolbarProfile = (Toolbar) findViewById(R.id.toolbarProfile);
+        setSupportActionBar(toolbarProfile);
+
+        if(getSupportActionBar()!=null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setTitle("");
+
+        }
 
         profileName = (TextView) findViewById(R.id.textViewProfileName);
         profileNameInput = (EditText) findViewById(R.id.NameInput);
@@ -104,6 +118,15 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId()==android.R.id.home){
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     public class ChangeUserData extends AsyncTask<String, Integer, String> {
