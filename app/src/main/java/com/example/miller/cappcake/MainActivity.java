@@ -74,6 +74,8 @@ public class MainActivity extends AppCompatActivity
 
         }
 
+
+
         afterLogin = getSharedPreferences("USER_LOGGEDIN", MODE_PRIVATE);
         loggedIn_value = String.valueOf(afterLogin.getAll());
 

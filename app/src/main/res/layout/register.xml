@@ -14,7 +14,7 @@
             android:id="@+id/toolbarRegister"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@android:color/holo_orange_dark"
+            android:background="@android:color/holo_blue_light"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <TextView

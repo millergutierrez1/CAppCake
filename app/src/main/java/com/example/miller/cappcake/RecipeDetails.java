@@ -58,6 +58,7 @@ public class RecipeDetails extends AppCompatActivity {
 
 
 
+
         titleDetails = (TextView) findViewById(R.id.titleDetails);
 
         titleIngredients = (TextView) findViewById(R.id.title_ingredients);
@@ -78,6 +79,7 @@ public class RecipeDetails extends AppCompatActivity {
         save_rating = (Button) findViewById(R.id.button_rating);
 
         cappImage = (ImageView) findViewById(R.id.capp_image);
+
 
 
         Gson gson = new Gson();
