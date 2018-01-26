@@ -2,6 +2,8 @@ package com.example.miller.cappcake;
 
 import com.google.gson.Gson;
 
+import java.util.Comparator;
+
 /**
  * Created by Miller on 12/21/2017.
  */
@@ -21,16 +23,10 @@ public class Recipes {
     private double ranking;
     private double ranking_count;
 
+
     public Recipes() {
     }
 
-    public long getKey() {
-        return key;
-    }
-
-    public void setKey(long key) {
-        this.key = key;
-    }
 
     @Override
     public String toString() {
@@ -119,8 +115,28 @@ public class Recipes {
         this.ranking_count = ranking_count;
     }
 
+    /*public static Comparator<Recipes> RecipeRatingComparator = new Comparator<Recipes>() {
+        @Override
+        public int compare(Recipes r1, Recipes r2) {
+
+            //ascending
+            return Double.compare(r2.getRanking()/r2.getRanking_count(), r1.getRanking()/r1.getRanking_count());
+
+        }
+    };*/
+
+
+
     public String[] getIngredientsExtra() {
         return ingredientsExtra;
+    }
+
+    public long getKey() {
+        return key;
+    }
+
+    public void setKey(long key) {
+        this.key = key;
     }
 
     public void setIngredientsExtra(String[] ingredientsExtra) {

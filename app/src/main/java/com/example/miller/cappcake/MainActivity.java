@@ -30,11 +30,14 @@ import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -112,12 +115,41 @@ public class MainActivity extends AppCompatActivity
         });
 
 
-
-
-
     }
 
 
+    public List<Recipes> sortingList(List<Recipes> list, String type){
+
+        List<Recipes> sortedList = list;
+        double max;
+        double min;
+        double current;
+        if(!sortedList.isEmpty())
+        switch(type){
+            case "ratingAscending":
+                /*
+                Collections.sort(sortedList, Recipes.RecipeRatingComparator);
+                for( Recipes l:sortedList){
+                    Log.d("SORTED_ASC",String.valueOf(l.getRanking()/l.getRanking_count()));
+                }
+                */
+
+
+                break;
+
+            case "ratingDescending":
+                break;
+
+            case "name":
+                break;
+        }
+
+
+
+        return sortedList;
+
+
+    }
 
 
 
@@ -270,6 +302,7 @@ public class MainActivity extends AppCompatActivity
                 recyclerView.setLayoutManager(new LinearLayoutManager(getApplication()));
                 adapter = new CappAdapter(getApplicationContext(), cappList);
                 recyclerView.setAdapter(adapter);
+                sortingList(cappList,"ratingAscending");
             }
 
             pd.dismiss();
