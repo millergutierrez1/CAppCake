@@ -3,7 +3,6 @@ package com.example.miller.cappcake;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,7 +19,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,14 +28,12 @@ import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 
@@ -50,10 +46,12 @@ public class MainActivity extends AppCompatActivity
     TextView userName;
     NavHeader nav;
 
+    boolean rating_asc, rating_desc;
+
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
 
-    private List<Recipes> cappList = new ArrayList<>();
+    private ArrayList<Recipes> cappList = new ArrayList<>();
     int countpost = 0;
 
     ProgressDialog pd;
@@ -62,21 +60,23 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        rating_asc = false;
+        rating_desc = false;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        // new loadRecipes().execute("http://10.0.2.2:8080/");
-        new loadRecipes().execute("https://mgappssupport.com/");
+        //new LoadRecipes().execute("http://10.0.2.2:8080/");
+        new LoadRecipes().execute("https://mgappssupport.com/");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if(getSupportActionBar()!=null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setTitle("");
 
         }
-
 
 
         afterLogin = getSharedPreferences("USER_LOGGEDIN", MODE_PRIVATE);
@@ -118,32 +118,32 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    public List<Recipes> sortingList(List<Recipes> list, String type){
+    public List<Recipes> sortingList(ArrayList<Recipes> list, String type) {
 
-        List<Recipes> sortedList = list;
+        ArrayList<Recipes> sortedList = list;
+        RecipeSortingRating recipeSorter;
         double max;
         double min;
         double current;
-        if(!sortedList.isEmpty())
-        switch(type){
-            case "ratingAscending":
-                /*
-                Collections.sort(sortedList, Recipes.RecipeRatingComparator);
-                for( Recipes l:sortedList){
-                    Log.d("SORTED_ASC",String.valueOf(l.getRanking()/l.getRanking_count()));
-                }
-                */
+        if (!sortedList.isEmpty())
+            switch (type) {
+                case "ratingAscending":
+                    recipeSorter = new RecipeSortingRating(sortedList);
+                    ArrayList<Recipes> sortedRecipesId = recipeSorter.getSortedByRating();
+                    for (Recipes l : sortedRecipesId) {
+                        Log.d("SORTED_ASC", String.valueOf(l.getRanking() / l.getRanking_count()));
+                    }
+                    break;
 
+                case "ratingDescending":
+                    recipeSorter = new RecipeSortingRating(sortedList);
+                    sortedRecipesId = recipeSorter.getSortedByRatingDesc();
+                    for (Recipes l : sortedRecipesId) {
+                        Log.d("SORTED_DESC", String.valueOf(l.getRanking()/l.getRanking_count()));
+                    }
 
-                break;
-
-            case "ratingDescending":
-                break;
-
-            case "name":
-                break;
-        }
-
+                    break;
+            }
 
 
         return sortedList;
@@ -152,11 +152,39 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    public class RecipeSortingRating {
+
+        ArrayList<Recipes> ratingList = new ArrayList<>();
+
+        public RecipeSortingRating(ArrayList<Recipes> ratingList) {
+            this.ratingList = ratingList;
+        }
+
+        public ArrayList<Recipes> getSortedByRating() {
+            Collections.sort(ratingList, Recipes.ratingComparator);
+            return ratingList;
+        }
+
+        public ArrayList<Recipes> getSortedByRatingDesc() {
+            Collections.sort(ratingList, Recipes.ratingComparatorDesc);
+            return ratingList;
+        }
+
+
+        public ArrayList<Recipes> getSortedByid() {
+
+            Collections.sort(ratingList, Recipes.idComparator);
+            return ratingList;
+
+
+        }
+    }
 
 
     public void refreshItems() {
-        //new loadRecipes().execute("http://10.0.2.2:8080/");
-        new loadRecipes().execute("https://mgappssupport.com/");
+        //new LoadRecipes().execute("http://10.0.2.2:8080/");
+
+        new LoadRecipes().execute("https://mgappssupport.com/");
         Log.d("REFRESHPAGE", "True");
 
     }
@@ -171,7 +199,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    public class loadRecipes extends AsyncTask<String, Integer, String> {
+    public class LoadRecipes extends AsyncTask<String, Integer, String> {
 
         StringBuilder sb = new StringBuilder();
         StringBuilder sbRespone = new StringBuilder();
@@ -298,11 +326,36 @@ public class MainActivity extends AppCompatActivity
 
             if (!cappList.isEmpty()) {
                 recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+                if(rating_asc){
+
+                    recyclerView.setHasFixedSize(true);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(getApplication()));
+                    adapter = new CappAdapter(getApplicationContext(), cappList);
+                    recyclerView.setAdapter(adapter);
+                    sortingList(cappList, "ratingAscending");
+                    Log.d("RAITNG_ASC", String.valueOf(rating_asc));
+                    rating_asc=false;
+
+                }else if(rating_desc){
+
+                    recyclerView.setHasFixedSize(true);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(getApplication()));
+                    adapter = new CappAdapter(getApplicationContext(), cappList);
+                    recyclerView.setAdapter(adapter);
+                    sortingList(cappList, "ratingDescending");
+                    Log.d("RATING_DESC",String.valueOf(rating_desc));
+                    rating_desc=false;
+
+                }
+
                 recyclerView.setHasFixedSize(true);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getApplication()));
                 adapter = new CappAdapter(getApplicationContext(), cappList);
                 recyclerView.setAdapter(adapter);
-                sortingList(cappList,"ratingAscending");
+
+
+
+
             }
 
             pd.dismiss();
@@ -341,10 +394,18 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        if (id == R.id.asc_rating) {
+            rating_asc=true;
+            refreshItems();
 
+
+            return true;
+        } else if(id == R.id.desc_rating){
+            rating_desc = true;
+            refreshItems();
+            return true;
+
+        }
 
 
         return super.onOptionsItemSelected(item);

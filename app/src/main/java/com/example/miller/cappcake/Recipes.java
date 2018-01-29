@@ -2,6 +2,8 @@ package com.example.miller.cappcake;
 
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 
 /**
@@ -115,7 +117,17 @@ public class Recipes {
         this.ranking_count = ranking_count;
     }
 
-    /*public static Comparator<Recipes> RecipeRatingComparator = new Comparator<Recipes>() {
+    public static Comparator<Recipes> ratingComparator = new Comparator<Recipes>() {
+        @Override
+        public int compare(Recipes r1, Recipes r2) {
+
+            //Descending
+            return Double.compare(r1.getRanking()/r1.getRanking_count(), r2.getRanking()/r2.getRanking_count());
+
+        }
+    };
+
+    public static Comparator<Recipes> ratingComparatorDesc = new Comparator<Recipes>() {
         @Override
         public int compare(Recipes r1, Recipes r2) {
 
@@ -123,7 +135,28 @@ public class Recipes {
             return Double.compare(r2.getRanking()/r2.getRanking_count(), r1.getRanking()/r1.getRanking_count());
 
         }
-    };*/
+    };
+
+
+    public static Comparator<Recipes> titleComparator = new Comparator<Recipes>() {
+        @Override
+        public int compare(Recipes r1, Recipes r2) {
+
+            //ascending
+            return (int) r2.getTitle().compareTo(r1.getTitle());
+
+        }
+    };
+
+    public static Comparator<Recipes> idComparator = new Comparator<Recipes>() {
+        @Override
+        public int compare(Recipes jc1, Recipes jc2) {
+
+            //Ascending
+            return (jc1.getId() < jc2.getId() ? -1 :
+                    (jc1.getId() == jc2.getId() ? 0 : 1));
+        }
+    };
 
 
 
@@ -363,3 +396,5 @@ public class Recipes {
         this.ranking_count = ranking_count;
     }
 }
+
+

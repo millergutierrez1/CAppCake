@@ -1,13 +1,13 @@
 package com.example.miller.cappcake;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
@@ -49,6 +49,7 @@ public class RecipeDetails extends AppCompatActivity {
     String httpData;
     ProgressDialog pd;
     boolean hasVoted;
+    FloatingActionButton floatingButton;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,11 +75,14 @@ public class RecipeDetails extends AppCompatActivity {
         instructions_frosting = (TextView) findViewById(R.id.instru_frosting);
         instructions_extra = (TextView) findViewById(R.id.instru_extras);
 
+
         rating = (RatingBar) findViewById(R.id.ratingBar);
         rating.setIsIndicator(false);
         save_rating = (Button) findViewById(R.id.button_rating);
 
         cappImage = (ImageView) findViewById(R.id.capp_image);
+
+        floatingButton = (FloatingActionButton) findViewById(R.id.floatingActionButton);
 
 
 
@@ -126,19 +130,26 @@ public class RecipeDetails extends AppCompatActivity {
         });
 
 
+        floatingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(RecipeDetails.this, r.getTitle(),Toast.LENGTH_SHORT).show();
+                floatingButton.setImageResource(R.drawable.icecreamchange);
+            }
+        });
+
+
+
+
         save_rating.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
 
-                //double rating_result = rating.getRating();
+
 
                 Log.d("RATING_INPUT", String.valueOf(r.getRanking()));
-                //Log.d("RATING_COUNT", String.valueOf(r.getRanking_count()));
 
-                //new SaveRating().execute("http://10.0.2.2:8080/");
-                //
-                //
                 if (!hasVoted) {
                     hasVoted=true;
                     new SaveRating().execute("http://10.0.2.2:8080/");

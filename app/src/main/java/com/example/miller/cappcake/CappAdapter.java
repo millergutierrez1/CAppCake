@@ -2,6 +2,7 @@ package com.example.miller.cappcake;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,8 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.QuickContactBadge;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.text.DecimalFormat;
 
 import java.util.List;
@@ -48,10 +52,10 @@ public class CappAdapter extends RecyclerView.Adapter<CappAdapter.ViewHolder> {
 
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
 
 
-        Recipes cappItems = capplist2.get(position);
+        final Recipes cappItems = capplist2.get(position);
 
         final int position2 = position;
 
@@ -115,6 +119,7 @@ public class CappAdapter extends RecyclerView.Adapter<CappAdapter.ViewHolder> {
         public ImageView cappImage;
         public RatingBar cappRating;
 
+
         //We add this to ensure we can get onClickListeners and see the whole object's info
         public LinearLayout linearLayout;
         public ViewHolder(View itemView) {
@@ -129,6 +134,7 @@ public class CappAdapter extends RecyclerView.Adapter<CappAdapter.ViewHolder> {
             v_count = (TextView) itemView.findViewById(R.id.v_count);
             linearLayout = (LinearLayout) itemView.findViewById(R.id.linearLayout);
             ratingCount = (TextView) itemView.findViewById(R.id.voting_count);
+
 
 
         }
