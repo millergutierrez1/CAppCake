@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +25,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 
 
 
@@ -40,7 +42,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Calendar;
+import java.util.logging.Logger;
 
 
 /**
@@ -342,7 +348,23 @@ public class Register extends AppCompatActivity {
                 user.setDateOfBirth(ageInput.getText().toString());
                 user.setEmail(emailInput.getText().toString());
                 user.setUser(userInput.getText().toString());
-                user.setPassword(passwordInput.getText().toString());
+
+                String passFinal = "";
+                try {
+                    byte[] salt = getSalt();
+                    String password = get_SHA_256_SecurePassword(passwordInput.getText().toString().trim(),salt);
+                    String passBase64 = android.util.Base64.encodeToString(salt,16);
+                    passFinal = password+"#"+passBase64;
+
+
+
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                }
+
+
+                Log.d("SALTED-HASH",passFinal);
+                user.setPassword(passFinal);
 
                 Log.d("USER_INFO: ", user.toString());
 
@@ -370,7 +392,7 @@ public class Register extends AppCompatActivity {
                 month++;
                 String date = dayOfMonth + "-" + month + "-" + year;
                 ageDb = year + "-" + month + "-" + dayOfMonth;
-                ageInput.setText(date);
+                ageInput.setText(ageDb);
                 Log.d("DatePicker:", year + "-" + month+ "-" + dayOfMonth);
 
 
@@ -380,14 +402,7 @@ public class Register extends AppCompatActivity {
         };
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId()==android.R.id.home){
-            finish();
-        }
 
-        return super.onOptionsItemSelected(item);
-    }
 
     public class userExistsDB extends AsyncTask<String, Integer, String> {
         StringBuilder sb = new StringBuilder();
@@ -419,6 +434,9 @@ public class Register extends AppCompatActivity {
             public void handleMessage(Message msg) {
                 if (msg.arg1 == 1)
                     Toast.makeText(getApplicationContext(), "Error de Conexión", Toast.LENGTH_LONG).show();
+                else if(msg.arg1==2){
+                    Toast.makeText(getApplicationContext(), "Usuario no creado.", Toast.LENGTH_LONG).show();
+                }
             }
         };
 
@@ -573,7 +591,8 @@ public class Register extends AppCompatActivity {
                 // Handle or log or ignore
             } finally {
 
-                Register.this.pd = null;
+
+                Register.this.pd.dismiss();
             }
 
             //I start a new AsyncTask from the OnPostExecute -> All data has been
@@ -590,6 +609,15 @@ public class Register extends AppCompatActivity {
     public class registrationTask extends AsyncTask<String, Integer, String> {
 
         String httpResponse2 = "";
+        private final Handler handler = new Handler() {
+            public void handleMessage(Message msg) {
+                if (msg.arg1 == 1)
+                    Toast.makeText(getApplicationContext(), "Error de Conexión", Toast.LENGTH_LONG).show();
+                else if(msg.arg1==2){
+                    Toast.makeText(getApplicationContext(), "Usuario no creado.", Toast.LENGTH_LONG).show();
+                }
+            }
+        };
 
         @Override
         protected void onPreExecute() {
@@ -608,19 +636,30 @@ public class Register extends AppCompatActivity {
 
             // After the registration is successful -> goes back to Signin
 
+            try{
+                if (httpResponse2.contains("User not created")) {
+                    Log.d("ERROR", "Usuario no creado");
+                    Message msg = handler.obtainMessage();
+                    msg.arg1 = 2;
+                    handler.sendMessage(msg);
+                    return;
+                }
 
-            if (httpResponse2.contains("User not created")) {
-                Log.d("ERROR", "Usuario no creado");
-                pd.dismiss();
-                return;
+                Log.d("REGSTRATION: ", "Successful");
+
+                Intent loginScreen = new Intent(Register.this, Login.class);
+                startActivity(loginScreen);
+            }catch(Exception e){
+                e.printStackTrace();
+
+            } finally {
+
+                Register.this.pd.dismiss();
             }
 
-            Log.d("REGSTRATION: ", "Successful");
 
-            Intent loginScreen = new Intent(Register.this, Login.class);
-            startActivity(loginScreen);
 
-            pd.dismiss();
+
         }
 
         @Override
@@ -748,5 +787,40 @@ public class Register extends AppCompatActivity {
         return false;
     }
 
+    /*
+    *Security --> Hashing +salt
+     */
+
+    private static String get_SHA_256_SecurePassword(String passwordToHash, byte[] salt)
+    {
+        String generatedPassword = null;
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(salt);
+            byte[] bytes = md.digest(passwordToHash.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for(int i=0; i< bytes.length ;i++)
+            {
+                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+            }
+            generatedPassword = sb.toString();
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            e.printStackTrace();
+        }
+        return generatedPassword;
+    }
+
+    private static byte[] getSalt() throws NoSuchAlgorithmException
+    {
+        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+        byte[] salt = new byte[16];
+        sr.nextBytes(salt);
+
+        return salt;
+    }
 
 }
+
+
