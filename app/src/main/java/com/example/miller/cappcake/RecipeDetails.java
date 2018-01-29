@@ -152,8 +152,8 @@ public class RecipeDetails extends AppCompatActivity {
 
                 if (!hasVoted) {
                     hasVoted=true;
-                    new SaveRating().execute("http://10.0.2.2:8080/");
-                    //new SaveRating().execute("http://mgappssupport.com/");
+                    //new SaveRating().execute("http://10.0.2.2:8080/");
+                    new SaveRating().execute("http://mgappssupport.com/");
                     rating.setIsIndicator(true);
 
 
