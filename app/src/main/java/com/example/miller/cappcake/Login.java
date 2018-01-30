@@ -27,6 +27,9 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 /**
  * Created by Miller on 12/6/2017.
@@ -168,10 +171,7 @@ public class Login extends AppCompatActivity {
                 startActivity(intent);
                 SharedPreferences sp = getSharedPreferences("USER_LOGGEDIN",MODE_PRIVATE);
                 ed = sp.edit();
-
-
                 ed.clear();
-
                 ed.putString("loggedin",usernameForm);
                 ed.commit();
                 pd.dismiss();
@@ -309,6 +309,36 @@ public class Login extends AppCompatActivity {
         public void setPassword(String password) {
             this.password = password;
         }
+    }
+
+    private static String get_SHA_256_SecurePassword(String passwordToHash, byte[] salt)
+    {
+        String generatedPassword = null;
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(salt);
+            byte[] bytes = md.digest(passwordToHash.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for(int i=0; i< bytes.length ;i++)
+            {
+                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+            }
+            generatedPassword = sb.toString();
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            e.printStackTrace();
+        }
+        return generatedPassword;
+    }
+
+    private static byte[] getSalt() throws NoSuchAlgorithmException
+    {
+        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+        byte[] salt = new byte[16];
+        sr.nextBytes(salt);
+
+        return salt;
     }
 }
 

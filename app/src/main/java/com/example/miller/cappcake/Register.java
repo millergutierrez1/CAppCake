@@ -199,6 +199,8 @@ public class Register extends AppCompatActivity {
             }
         });
 
+
+
         /*
         * Show Dialog Calendar  DATE of birth
         *
@@ -819,6 +821,15 @@ public class Register extends AppCompatActivity {
         sr.nextBytes(salt);
 
         return salt;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId()==android.R.id.home){
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 }

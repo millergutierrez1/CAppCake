@@ -45,17 +45,13 @@ public class MainActivity extends AppCompatActivity
     String loggedIn_value;
     TextView userName;
     NavHeader nav;
-
+    MenuItem login_logout;
     boolean rating_asc, rating_desc;
-
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
-
     private ArrayList<Recipes> cappList = new ArrayList<>();
     int countpost = 0;
-
     ProgressDialog pd;
-
     SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
@@ -83,6 +79,8 @@ public class MainActivity extends AppCompatActivity
         loggedIn_value = String.valueOf(afterLogin.getAll());
 
 
+
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -92,6 +90,12 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 
         navigationView.setNavigationItemSelectedListener(this);
+
+        Menu menuNav = navigationView.getMenu();
+        login_logout = menuNav.findItem(R.id.nav_salir);
+        if(!loggedIn_value.contains("loggedin")){
+            login_logout.setTitle("Iniciar Sesión");
+        }
 
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
@@ -113,6 +117,7 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+
 
 
     }
@@ -414,7 +419,15 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+
+
         // Handle navigation view item clicks here.
+
+
+
         int id = item.getItemId();
 
         if (id == R.id.nav_profile) {
@@ -426,14 +439,20 @@ public class MainActivity extends AppCompatActivity
             // Handle the camera action
         } else if (id == R.id.nav_recipes) {
 
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_salir) {
 
-        } else if (id == R.id.nav_send) {
+            if(loggedIn_value.contains("loggedin")){
+
+                finish();
+
+
+            }else{
+                finish();
+            }
 
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+
         return true;
     }
 

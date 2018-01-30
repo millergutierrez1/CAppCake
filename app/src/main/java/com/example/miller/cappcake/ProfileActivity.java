@@ -30,6 +30,9 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 /**
  * Created by Miller on 12/4/2017.
@@ -54,7 +57,6 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile);
-
 
         toolbarProfile = (Toolbar) findViewById(R.id.toolbarProfile);
         setSupportActionBar(toolbarProfile);
@@ -104,7 +106,19 @@ public class ProfileActivity extends AppCompatActivity {
                 Toast toast = Toast.makeText(getApplicationContext(), roastSave, duration);
                 user.setName(profileNameInput.getText().toString());
                 user.setEmail(emailInput.getText().toString());
-                user.setPassword(passwordInput.getText().toString());
+                //user.setPassword(passwordInput.getText().toString());
+                byte[] salt;
+
+                try {
+                     salt = getSalt();
+                     String hashedPass = get_SHA_256_SecurePassword(passwordInput.getText().toString(), salt);
+                     String hashed64 = android.util.Base64.encodeToString(salt,16);
+                     user.setPassword(hashedPass+"#"+hashed64);
+
+
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                }
 
 
                 httpData = user.toString();
@@ -118,6 +132,38 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
 
+
+
+    }
+
+    private static byte[] getSalt() throws NoSuchAlgorithmException
+    {
+        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+        byte[] salt = new byte[16];
+        sr.nextBytes(salt);
+
+        return salt;
+    }
+
+    private static String get_SHA_256_SecurePassword(String passwordToHash, byte[] salt)
+    {
+        String generatedPassword = null;
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(salt);
+            byte[] bytes = md.digest(passwordToHash.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for(int i=0; i< bytes.length ;i++)
+            {
+                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+            }
+            generatedPassword = sb.toString();
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            e.printStackTrace();
+        }
+        return generatedPassword;
     }
 
     @Override
@@ -343,6 +389,7 @@ public class ProfileActivity extends AppCompatActivity {
                 Log.d("PROFILE: ", user.toString());
                 profileNameInput.setText(user.getName());
                 emailInput.setText(user.getEmail());
+
                 passwordInput.setText(user.getPassword());
                 pd.dismiss();
 

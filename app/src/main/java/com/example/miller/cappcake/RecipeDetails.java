@@ -57,9 +57,6 @@ public class RecipeDetails extends AppCompatActivity {
         setContentView(R.layout.recipe_details);
         hasVoted = false;
 
-
-
-
         titleDetails = (TextView) findViewById(R.id.titleDetails);
 
         titleIngredients = (TextView) findViewById(R.id.title_ingredients);
@@ -67,8 +64,6 @@ public class RecipeDetails extends AppCompatActivity {
         ingredients_biscuit = (TextView) findViewById(R.id.ingredients_biscuits);
         ingredients_frosting = (TextView) findViewById(R.id.ingredients_frosting);
         ingredients_extra = (TextView) findViewById(R.id.ingredients_extra);
-
-
         titleInstructions = (TextView) findViewById(R.id.title_instructions);
         titleInstructions.setShadowLayer(5, 0, 0, Color.BLACK);
         instructions_biscuit = (TextView) findViewById(R.id.instru_biscuit);
