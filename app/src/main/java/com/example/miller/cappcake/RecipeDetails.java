@@ -1,6 +1,7 @@
 package com.example.miller.cappcake;
 
 import android.app.ProgressDialog;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -49,14 +50,17 @@ public class RecipeDetails extends AppCompatActivity {
     String httpData;
     ProgressDialog pd;
     boolean hasVoted;
+    Profile user = new Profile();
     FloatingActionButton floatingButton;
+    Gson gson = new Gson();
+    SharedPreferences sp ;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe_details);
         hasVoted = false;
-
+        sp = getSharedPreferences("USER_LOGGEDIN",MODE_PRIVATE);
         titleDetails = (TextView) findViewById(R.id.titleDetails);
 
         titleIngredients = (TextView) findViewById(R.id.title_ingredients);
@@ -129,7 +133,14 @@ public class RecipeDetails extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(RecipeDetails.this, r.getTitle(),Toast.LENGTH_SHORT).show();
+                new SaveRecipeProfile().execute("http://10.0.2.2:8080/");
                 floatingButton.setImageResource(R.drawable.icecreamchange);
+
+
+
+
+
+
             }
         });
 
@@ -139,10 +150,6 @@ public class RecipeDetails extends AppCompatActivity {
         save_rating.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
-
-
                 Log.d("RATING_INPUT", String.valueOf(r.getRanking()));
 
                 if (!hasVoted) {
@@ -301,6 +308,163 @@ public class RecipeDetails extends AppCompatActivity {
         }
     }
 
+
+
+
+    public class SaveRecipeProfile extends AsyncTask<String, Integer,String>{
+
+        StringBuilder sb = new StringBuilder();
+        StringBuilder sbRespone = new StringBuilder();
+        String httpResponse;
+        boolean exceptionError;
+
+        @Override
+        protected void onPreExecute() {
+
+            //progressDialog configuration
+            super.onPreExecute();
+            /*pd = new ProgressDialog(Register.this);
+            pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            pd.setMax(10);
+            pd.setMessage("Registrando usuario");
+            pd.setProgress(0);
+            pd.show();*/
+            //Log.d("", "Started progressDialog");
+
+
+        }
+
+        /*
+        * Need to use a handler as can't use Toasts while running an async thread.
+         */
+
+        private final Handler handler = new Handler() {
+            public void handleMessage(Message msg) {
+                if (msg.arg1 == 1)
+                    Toast.makeText(getApplicationContext(), "Error de Conexión", Toast.LENGTH_LONG).show();
+                else if(msg.arg1==2){
+                    Toast.makeText(getApplicationContext(), "Usuario no creado.", Toast.LENGTH_LONG).show();
+                }
+            }
+        };
+
+        @Override
+        protected String doInBackground(String... params) {
+            BufferedReader br = null;
+            HttpURLConnection connection = null;
+
+            try {
+                Log.d("POST_UserValidaton   ", "True");
+
+                URL urlPost = null;
+                urlPost = new URL(params[0] + "insert_profile_recipes");
+                connection = (HttpURLConnection) urlPost.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                connection.setConnectTimeout(10000);
+                connection.setReadTimeout(15000);
+                connection.setDoOutput(true);
+                connection.connect();
+
+                String httpData =sp.getString("loggedin","notLoggedin");
+                exceptionError = false;
+
+                OutputStream os = connection.getOutputStream();
+                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                Log.d("CONNECTION_INFO", httpData);
+                bw.write(httpData);
+
+
+                //Release resources
+
+                bw.flush();
+                bw.close();
+                os.close();
+
+                //Check Connection HTTP response:
+                Log.d("CONNECTION_POST_ATTEMPT", connection.getResponseCode() + "-" + connection.getResponseMessage().toString());
+
+                int responseCode = connection.getResponseCode();
+                if (responseCode == connection.HTTP_OK) {
+
+                    BufferedReader brResponse = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+
+                    String line = "";
+
+                    while ((line = brResponse.readLine()) != null) {
+                        sbRespone.append(line).toString();
+                    }
+
+                    httpResponse = sbRespone.toString();
+                    brResponse.close();
+                    Log.d("HTTP_RESPONSE", httpResponse);
+                    publishProgress(10);
+                    return httpResponse;
+
+                }
+            } catch (MalformedURLException e) {
+                Log.d("CONNECTION-MAL:", "Unsuccessful");
+                e.printStackTrace();
+                exceptionError = true;
+            } catch (IOException e) {
+                Log.d("CONNECTION-IO:", "Unsuccessful");
+                e.printStackTrace();
+                exceptionError = true;
+
+
+            } finally {
+                if (connection != null) {
+                    Log.d("CONNECTION:", "Closing connection");
+                    Log.d("NetworkError: ", String.valueOf(exceptionError));
+
+                    if (exceptionError) {
+                        Message msg = handler.obtainMessage();
+                        msg.arg1 = 1;
+                        handler.sendMessage(msg);
+                        Log.d("CANCELLED: ", String.valueOf(isCancelled()));
+                    }
+                    connection.disconnect();
+                }
+
+                if (br != null) {
+                    try {
+
+                        br.close();
+                        Log.d("BUFFERED-READER:", "CLOSED");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+                return null;
+            }
+
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+
+            //Control progressDialogue -> 0
+            /*super.onProgressUpdate(values);
+            int progress = values[0];
+            pd.setProgress(progress);*/
+        }
+
+        @Override
+        protected void onPostExecute(String builder) {
+            super.onPostExecute(null);
+
+            if(httpResponse.contains("recipeSaved")){
+
+            }else{
+
+            }
+
+        }
+
+
+    }
 
 }
 

@@ -14,6 +14,7 @@ public class Profile {
     private String dateOfBirth;
     private String user;
     private int id;
+    private String recipeIds;
 
     public Profile() {
     }
@@ -24,6 +25,14 @@ public class Profile {
         this.password = password;
         this.dateOfBirth = dateOfBirth;
         this.user = user;
+    }
+
+    public String getRecipeIds() {
+        return recipeIds;
+    }
+
+    public void setRecipeIds(String recipeIds) {
+        this.recipeIds = recipeIds;
     }
 
     public String getUser() {
