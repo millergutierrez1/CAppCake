@@ -46,11 +46,54 @@ public class Login extends AppCompatActivity {
 
     EditText userName, password;
 
+    private static String get_SHA_256_SecurePassword(String passwordToHash, byte[] salt)
+    {
+        String generatedPassword = null;
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(salt);
+            byte[] bytes = md.digest(passwordToHash.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for(int i=0; i< bytes.length ;i++)
+            {
+                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+            }
+            generatedPassword = sb.toString();
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            e.printStackTrace();
+        }
+        return generatedPassword;
+    }
+
+    private static byte[] getSalt() throws NoSuchAlgorithmException
+    {
+        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+        byte[] salt = new byte[16];
+        sr.nextBytes(salt);
+
+        return salt;
+    }
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
+
+        SharedPreferences sp = this.getSharedPreferences("USER_LOGGEDIN", MODE_PRIVATE);
+        String preLogin = sp.getAll().toString().toString();
+        Log.d("LoadingLogin", preLogin);
+
+        if(preLogin.contains("loggedin")){
+            Log.d("PRELOGIN", preLogin);
+            Intent userLoggedin = new Intent(this, MainActivity.class);
+            startActivity(userLoggedin);
+        } else{
+            Log.d("PRELOGIN", "notloggedin  ");
+        }
 
         userName = (EditText) findViewById(R.id.userName);
         password = (EditText) findViewById(R.id.Password);
@@ -81,6 +124,7 @@ public class Login extends AppCompatActivity {
             public void onClick(View v) {
                 usernameForm = userName.getText().toString();
                 uPassword = password.getText().toString();
+
 
                 if(usernameForm.isEmpty() || uPassword.isEmpty()){
                     Log.d("LOGIN-FORM: ","Empty");
@@ -167,13 +211,17 @@ public class Login extends AppCompatActivity {
                 return;
 
             } else{
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(intent);
                 SharedPreferences sp = getSharedPreferences("USER_LOGGEDIN",MODE_PRIVATE);
                 ed = sp.edit();
                 ed.clear();
                 ed.putString("loggedin",usernameForm);
                 ed.commit();
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+
+
+                Log.d("USER-LOGIN","true");
+
                 pd.dismiss();
 
 
@@ -311,35 +359,7 @@ public class Login extends AppCompatActivity {
         }
     }
 
-    private static String get_SHA_256_SecurePassword(String passwordToHash, byte[] salt)
-    {
-        String generatedPassword = null;
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(salt);
-            byte[] bytes = md.digest(passwordToHash.getBytes());
-            StringBuilder sb = new StringBuilder();
-            for(int i=0; i< bytes.length ;i++)
-            {
-                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
-            }
-            generatedPassword = sb.toString();
-        }
-        catch (NoSuchAlgorithmException e)
-        {
-            e.printStackTrace();
-        }
-        return generatedPassword;
-    }
 
-    private static byte[] getSalt() throws NoSuchAlgorithmException
-    {
-        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
-        byte[] salt = new byte[16];
-        sr.nextBytes(salt);
-
-        return salt;
-    }
 }
 
 

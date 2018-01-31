@@ -54,6 +54,8 @@ public class MainActivity extends AppCompatActivity
     ProgressDialog pd;
     SwipeRefreshLayout mSwipeRefreshLayout;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -442,6 +444,11 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_salir) {
 
             if(loggedIn_value.contains("loggedin")){
+
+                SharedPreferences sp = getSharedPreferences("USER_LOGGEDIN",MODE_PRIVATE);
+                SharedPreferences.Editor ed = sp.edit();
+                Log.d("sp_loggedin", loggedIn_value+": "+sp.getString("USER_LOGGEDIN","NotLoggedIn"));
+                ed.clear().commit();
 
                 finish();
 

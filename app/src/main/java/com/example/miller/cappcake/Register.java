@@ -359,11 +359,9 @@ public class Register extends AppCompatActivity {
                     passFinal = password+"#"+passBase64;
 
 
-
                 } catch (NoSuchAlgorithmException e) {
                     e.printStackTrace();
                 }
-
 
                 Log.d("SALTED-HASH",passFinal);
                 user.setPassword(passFinal);
@@ -572,7 +570,7 @@ public class Register extends AppCompatActivity {
                         Log.d("EMAILINPUT-THREAD: ", "Email Exists");
 
                     }
-                }
+                }https://stackoverflow.com/questions/4974568/how-do-i-launch-the-android-emulator-from-the-command-line
 
                 if (isCancelled()) {
 

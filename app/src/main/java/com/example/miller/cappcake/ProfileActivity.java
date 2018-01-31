@@ -10,6 +10,8 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -51,12 +53,14 @@ public class ProfileActivity extends AppCompatActivity {
     String httpData;
 
     Gson gson = new Gson();
+    boolean bolPassword;
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile);
+        bolPassword=false;
 
         toolbarProfile = (Toolbar) findViewById(R.id.toolbarProfile);
         setSupportActionBar(toolbarProfile);
@@ -76,17 +80,74 @@ public class ProfileActivity extends AppCompatActivity {
 
         password = (TextView) findViewById(R.id.password);
         passwordInput = (EditText) findViewById(R.id.passwordInput);
+        passwordInput.setOnClickListener(new View.OnClickListener() {
+
+
+            @Override
+            public void onClick(View v) {
+                passwordInput.setText("");
+            }
+        });
+
+        passwordInput.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                passwordInput.setText("");
+            }
+        });
 
         // Receive intent from main.
         intent = getIntent();
 
         saveButton = (Button) findViewById(R.id.saveButton);
+        emailInput.setInputType(0);
 
         SharedPreferences prefernces = getSharedPreferences("USER_LOGGEDIN", MODE_PRIVATE);
 
         Log.d("USER_LOGGEDIN", prefernces.getAll().toString());
 
         httpData = String.valueOf(prefernces.getString("loggedin", "NotLoggedIn"));
+
+
+
+        passwordInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String pass = passwordInput.getText().toString();
+                boolean uppercase = !pass.equals(pass.toLowerCase());
+
+                if (pass.length() < 8) {
+                    passwordInput.setError("Mínimo 8 caracteres!");
+                    bolPassword = false;
+                } else if (!uppercase) {
+                    passwordInput.setError("Debe contener al menos 1 letra mayúscula");
+                    bolPassword = false;
+                } else if (pass.matches("(\\W)+(\\w)*|(\\s)+(\\w)*")) {
+                    passwordInput.setError("La Contraseña debe empezar con una letra");
+                    bolPassword = false;
+
+                } else if(pass.contains(" ")){
+                    passwordInput.setError("La Contraseña no puede tener espacios");
+                    bolPassword = false;
+                }
+
+                else {
+                    Log.d("PASSWORD_INPUT: ", "Valid");
+                    bolPassword = true;
+                }
+
+            }
+        });
 
 
         //user-email-password-1312-usuario
@@ -100,33 +161,42 @@ public class ProfileActivity extends AppCompatActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String roastSave = "Saving...";
-                int duration = Toast.LENGTH_LONG;
 
-                Toast toast = Toast.makeText(getApplicationContext(), roastSave, duration);
-                user.setName(profileNameInput.getText().toString());
-                user.setEmail(emailInput.getText().toString());
-                //user.setPassword(passwordInput.getText().toString());
-                byte[] salt;
+                if(bolPassword) {
+                    String roastSave = "Saving...";
+                    int duration = Toast.LENGTH_LONG;
 
-                try {
-                     salt = getSalt();
-                     String hashedPass = get_SHA_256_SecurePassword(passwordInput.getText().toString(), salt);
-                     String hashed64 = android.util.Base64.encodeToString(salt,16);
-                     user.setPassword(hashedPass+"#"+hashed64);
+                    Toast toast = Toast.makeText(getApplicationContext(), roastSave, duration);
+                    user.setName(profileNameInput.getText().toString());
+                    user.setEmail(emailInput.getText().toString());
+                    //user.setPassword(passwordInput.getText().toString());
+                    byte[] salt;
+
+                    try {
+                        salt = getSalt();
+                        String hashedPass = get_SHA_256_SecurePassword(passwordInput.getText().toString(), salt);
+                        String hashed64 = android.util.Base64.encodeToString(salt, 16);
+                        user.setPassword(hashedPass + "#" + hashed64);
 
 
-                } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
+                    } catch (NoSuchAlgorithmException e) {
+                        e.printStackTrace();
+                    }
+
+
+                    httpData = user.toString();
+
+                    //new ChangeUserData().execute("http://10.0.2.2:8080/");
+                    new ChangeUserData().execute("https://mgappssupport.com/");
+
+                    Log.d("USER_INFO", user.toString());
+                    if (pd.isShowing()) {
+                        pd.dismiss();
+                    }
+                    finish();
+                }else{
+                    Toast.makeText(ProfileActivity.this, "Has hecho todos los cambios?",Toast.LENGTH_LONG).show();
                 }
-
-
-                httpData = user.toString();
-                //new ChangeUserData().execute("http://10.0.2.2:8080/");
-                new ChangeUserData().execute("https://mgappssupport.com/");
-
-                Log.d("UserInfo", user.toString());
-                finish();
 
             }
         });
@@ -225,16 +295,17 @@ public class ProfileActivity extends AppCompatActivity {
                     Message msg = handler.obtainMessage();
                     msg.arg1 = 4;
                     handler.sendMessage(msg);
-                    finish();
+
 
                 } else {
                     Message msg = handler.obtainMessage();
                     msg.arg1 = 5;
                     handler.sendMessage(msg);
-                    finish();
+
                 }
 
                 if ((ProfileActivity.this.pd != null) && ProfileActivity.this.pd.isShowing()) {
+                    Log.d("DISMISS","true");
                     ProfileActivity.this.pd.dismiss();
                 }
 
@@ -243,6 +314,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                 // Handle or log or ignore
             } finally {
+                Log.d("DISMISS","true");
                 ProfileActivity.this.pd.dismiss();
             }
 
@@ -335,6 +407,8 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+
+
     /*
     Async to gather information from DB based on the user LoggedIn
      */
@@ -390,6 +464,7 @@ public class ProfileActivity extends AppCompatActivity {
                 profileNameInput.setText(user.getName());
                 emailInput.setText(user.getEmail());
 
+                //It will not populate the real Password as it contains the hash+pass
                 passwordInput.setText(user.getPassword());
                 pd.dismiss();
 
