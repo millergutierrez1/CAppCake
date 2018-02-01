@@ -132,9 +132,20 @@ public class RecipeDetails extends AppCompatActivity {
         floatingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(RecipeDetails.this, r.getTitle(),Toast.LENGTH_SHORT).show();
-                new SaveRecipeProfile().execute("http://10.0.2.2:8080/");
-                floatingButton.setImageResource(R.drawable.icecreamchange);
+                //Toast.makeText(RecipeDetails.this, r.getTitle(),Toast.LENGTH_SHORT).show();
+
+                String canSave = sp.getAll().toString();
+
+                System.out.println(canSave);
+                if(canSave.contains("loggedin")){
+                    new SaveRecipeProfile().execute("http://10.0.2.2:8080/");
+                    floatingButton.setImageResource(R.drawable.icecreamchange);
+                }else{
+                    Toast.makeText(RecipeDetails.this, "Inicia sesión para guardar en favoritos!", Toast.LENGTH_LONG).show();
+                }
+
+
+
 
 
 
@@ -315,7 +326,7 @@ public class RecipeDetails extends AppCompatActivity {
 
         StringBuilder sb = new StringBuilder();
         StringBuilder sbRespone = new StringBuilder();
-        String httpResponse;
+        String httpResponse = "";
         boolean exceptionError;
 
         @Override
@@ -366,7 +377,13 @@ public class RecipeDetails extends AppCompatActivity {
                 connection.setDoOutput(true);
                 connection.connect();
 
-                String httpData =sp.getString("loggedin","notLoggedin");
+                SaveRecipeId userRecipe = new SaveRecipeId();
+
+                userRecipe.setName(sp.getString("loggedin","notLoggedin"));
+                userRecipe.setId(String.valueOf(r.getId()));
+                String httpData = gson.toJson(userRecipe);
+
+
                 exceptionError = false;
 
                 OutputStream os = connection.getOutputStream();
@@ -465,6 +482,32 @@ public class RecipeDetails extends AppCompatActivity {
 
 
     }
+
+    public class SaveRecipeId{
+        String name;
+        String id;
+
+        public SaveRecipeId(){
+
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+    }
+
 
 }
 
