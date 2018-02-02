@@ -49,7 +49,7 @@ public class RecipeDetails extends AppCompatActivity {
     EditText multiline;
     String httpData;
     ProgressDialog pd;
-    boolean hasVoted;
+    boolean hasVoted, storedRecipe;
     Profile user = new Profile();
     FloatingActionButton floatingButton;
     Gson gson = new Gson();
@@ -58,6 +58,7 @@ public class RecipeDetails extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        storedRecipe = false;
         setContentView(R.layout.recipe_details);
         hasVoted = false;
         sp = getSharedPreferences("USER_LOGGEDIN",MODE_PRIVATE);
@@ -104,6 +105,9 @@ public class RecipeDetails extends AppCompatActivity {
             with(RecipeDetails.this).load(url).resize(720, 600).centerInside().into(cappImage);
         }
 
+        Log.d("CHECK_RECIPES","START");
+        new LoadRecipesPerUser().execute("http://10.0.2.2:8080/");
+        Log.d("CHECK_RECIPES","FINISH");
 
         ingredients_biscuit.setText(Html.fromHtml(r.ingredientsBiscuitToString()));
         ingredients_frosting.setText(Html.fromHtml(r.ingredientsFrostingToString()));
@@ -137,18 +141,20 @@ public class RecipeDetails extends AppCompatActivity {
                 String canSave = sp.getAll().toString();
 
                 System.out.println(canSave);
-                if(canSave.contains("loggedin")){
+
+
+                if(canSave.contains("loggedin") && storedRecipe==false){
+
                     new SaveRecipeProfile().execute("http://10.0.2.2:8080/");
+                    storedRecipe = true;
                     floatingButton.setImageResource(R.drawable.icecreamchange);
-                }else{
+
+                }else if(storedRecipe==false){
                     Toast.makeText(RecipeDetails.this, "Inicia sesión para guardar en favoritos!", Toast.LENGTH_LONG).show();
+                } else{
+                    Toast.makeText(RecipeDetails.this, "Receta ya añadida a tu favoritos!", Toast.LENGTH_LONG).show();
+
                 }
-
-
-
-
-
-
 
 
 
@@ -310,6 +316,7 @@ public class RecipeDetails extends AppCompatActivity {
             super.onPostExecute(s);
 
             if (responseCode == 200) {
+
                 Message msg = handler.obtainMessage();
                 msg.arg1 = 2;
                 handler.sendMessage(msg);
@@ -482,6 +489,158 @@ public class RecipeDetails extends AppCompatActivity {
 
 
     }
+
+    public class LoadRecipesPerUser extends AsyncTask<String, Integer, String>{
+
+        StringBuilder sb = new StringBuilder();
+        StringBuilder sbRespone = new StringBuilder();
+        String httpResponse = "";
+        boolean exceptionError;
+        boolean loggedIn = false;
+        int responseCode;
+        String httpRecipes;
+
+        private final Handler handler = new Handler() {
+            public void handleMessage(Message msg) {
+                if (msg.arg1 == 1) {
+                    Toast.makeText(getApplicationContext(), "Error de Conexión", Toast.LENGTH_LONG).show();
+                }
+
+            }
+        };
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            pd = new ProgressDialog(RecipeDetails.this);
+            pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            pd.setMax(10);
+            pd.setMessage("Actualizando recetas...");
+            pd.setProgress(0);
+            pd.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            BufferedReader br = null;
+            HttpURLConnection connection = null;
+
+            Gson gson = new Gson();
+            try {
+                URL urlPost = null;
+                urlPost = new URL(params[0] + "recipes_per_user");
+                connection = (HttpURLConnection) urlPost.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                connection.setConnectTimeout(10000);
+                connection.setReadTimeout(15000);
+                connection.setDoOutput(true);
+                connection.connect();
+
+                OutputStream os = connection.getOutputStream();
+                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+
+
+                httpRecipes = gson.toJson(sp.getString("loggedin","notLoggedin").toString().trim());
+
+                Log.d("CONNECTION_INFO", httpRecipes);
+                bw.write(httpRecipes);
+
+                //Release resources
+
+                bw.flush();
+                bw.close();
+                os.close();
+
+                Log.d("CONNECTION_POST_ATTEMPT", connection.getResponseCode() + "-" + connection.getResponseMessage().toString());
+                responseCode = connection.getResponseCode();
+                if (responseCode == connection.HTTP_OK) {
+
+                    BufferedReader brResponse = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    String line = "";
+
+                    while ((line = brResponse.readLine()) != null) {
+                        sbRespone.append(line).toString();
+                    }
+
+                    httpResponse = sbRespone.toString();
+                    brResponse.close();
+                    Log.d("HTTP_RESPONSE", httpResponse);
+                    publishProgress(10);
+
+                    return httpResponse;
+
+                }
+            } catch (MalformedURLException e) {
+                Log.d("CONNECTION-MAL:", "Unsuccessful");
+                e.printStackTrace();
+                exceptionError = true;
+            } catch (IOException e) {
+                Log.d("CONNECTION-IO:", "Unsuccessful");
+                e.printStackTrace();
+                exceptionError = true;
+
+
+            } finally {
+                if (connection != null) {
+                    Log.d("CONNECTION:", "Closing connection");
+                    Log.d("NetworkError:", String.valueOf(exceptionError));
+                    if (exceptionError) {
+                        Message msg = handler.obtainMessage();
+                        msg.arg1 = 1;
+                        handler.sendMessage(msg);
+                        Log.d("CANCELLED:", String.valueOf(isCancelled()));
+
+                    }
+                    connection.disconnect();
+                }
+
+                if (br != null) {
+                    try {
+
+                        br.close();
+                        Log.d("BUFFERED-READER:", "CLOSED");
+                    } catch (IOException e) {
+                        Log.d("IO: ", e.getMessage());
+                        e.printStackTrace();
+                    }
+
+                }
+                return null;
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            Log.d("HTTPRESPONSE",httpResponse);
+            if (!httpResponse.contains("No recipes found")) {
+
+                Log.d("INSIDE STATUS",httpResponse);
+                String[] recipes_list = httpResponse.split("-");
+                for (String l:recipes_list){
+                    Log.d("INSIDE_RECIPES_LOOP",l);
+                    if(l.equals(String.valueOf(r.getId()))){
+
+                        Log.d("RECIPES_LOADED",l);
+                        storedRecipe = true;
+                        floatingButton.setImageResource(R.drawable.icecreamchange);
+                    }
+
+                }
+
+            }else{
+                storedRecipe = false;
+            }
+
+            pd.dismiss();
+
+        }
+    }
+
 
     public class SaveRecipeId{
         String name;
