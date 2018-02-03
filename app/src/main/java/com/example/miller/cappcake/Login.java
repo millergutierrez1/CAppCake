@@ -136,8 +136,8 @@ public class Login extends AppCompatActivity {
                 * Initiate AsyncTask for login using user/pass
                 */
 
-                new login().execute("http://10.0.2.2:8080/");
-                //new login().execute("https://mgappssupport.com/");
+                //new login().execute("http://10.0.2.2:8080/");
+                new login().execute("https://mgappssupport.com/");
 
             }
         });

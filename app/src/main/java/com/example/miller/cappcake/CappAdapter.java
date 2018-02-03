@@ -62,8 +62,12 @@ public class CappAdapter extends RecyclerView.Adapter<CappAdapter.ViewHolder> {
         holder.cappTitle.setText(cappItems.getTitle());
         Log.d("IMAGE_URL", cappItems.getUrlImage());
 
+
+
         if(cappItems.getUrlImage()!=""){
-            with(context).load(cappItems.getUrlImage()).resize(720 ,600).centerInside().into(holder.cappImage);
+            with(context).load(cappItems.getUrlImage())
+                    .resize(720 ,640).centerInside()
+                    .placeholder(R.drawable.icecreamholder).error(R.drawable.icecreamholdererror).into(holder.cappImage);
         }
 
 

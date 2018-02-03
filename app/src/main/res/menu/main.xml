@@ -5,10 +5,10 @@
         <item
             android:id="@+id/asc_rating"
             android:orderInCategory="100"
-            android:title="Ordenar Valoración Asc."
+            android:title="Peor Valorados"
             app:showAsAction="never" />
         <item
             android:id="@+id/desc_rating"
-            android:title="Ordenar Valoración Desc." />
+            android:title="Mejor Valorados" />
     </group>
 </menu>

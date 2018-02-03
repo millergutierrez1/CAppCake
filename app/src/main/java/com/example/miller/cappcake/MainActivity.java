@@ -292,7 +292,7 @@ public class MainActivity extends AppCompatActivity
 
             } finally {
                 if (connection != null) {
-                    Log.d("CONNECTION:", "Closing connection");
+                    Log.d("CONNECTION:", "Closing connection LoadRecipes");
                     System.out.println("NetworkError" + exceptionError);
                     if (exceptionError) {
                         Message msg = handler.obtainMessage();
@@ -435,11 +435,28 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_profile) {
 
             //Start intent towards ProfileActivity
-            Intent profileIntent = new Intent(getApplicationContext(), ProfileActivity.class);
-            startActivityForResult(profileIntent, 1);
+
+
+            if(!loggedIn_value.contains("loggedin")){
+                Toast.makeText(this, "Primero debes iniciar sesión", Toast.LENGTH_LONG).show();
+            } else{
+                Intent profileIntent = new Intent(getApplicationContext(), ProfileActivity.class);
+                startActivityForResult(profileIntent, 1);
+
+            }
 
             // Handle the camera action
         } else if (id == R.id.nav_recipes) {
+
+            if(!loggedIn_value.contains("loggedin")){
+                Toast.makeText(this, "Primero debes iniciar sesión", Toast.LENGTH_LONG).show();
+            } else{
+                Intent intent = new Intent(getApplicationContext(), Main2Profile.class);
+                startActivityForResult(intent, 1);
+
+            }
+
+
 
         } else if (id == R.id.nav_salir) {
 
