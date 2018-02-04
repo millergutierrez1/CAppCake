@@ -14,7 +14,7 @@
             android:id="@+id/toolbarRegister"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@android:color/holo_blue_light"
+            android:background="@color/colorBlueLight"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <TextView
@@ -25,6 +25,7 @@
                 android:fontFamily="@font/fjalla_one"
                 android:text="Registro"
                 android:textAllCaps="true"
+                android:textColor="@color/cardview_light_background"
                 android:textSize="22sp" />
         </android.support.v7.widget.Toolbar>
 

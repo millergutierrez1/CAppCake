@@ -6,11 +6,11 @@
         <item
             android:id="@+id/nav_profile"
             android:icon="@mipmap/gauge"
-            android:title="Profile" />
+            android:title="Mi Perfil" />
         <item
             android:id="@+id/nav_recipes"
             android:icon="@mipmap/icecream"
-            android:title="Recipes" />
+            android:title="Mis Recetas" />
         <item
             android:id="@+id/nav_salir"
             android:icon="@mipmap/badge"

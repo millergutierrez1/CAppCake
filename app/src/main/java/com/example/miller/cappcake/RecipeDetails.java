@@ -9,10 +9,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -63,6 +66,14 @@ public class RecipeDetails extends AppCompatActivity {
         hasVoted = false;
         sp = getSharedPreferences("USER_LOGGEDIN",MODE_PRIVATE);
         titleDetails = (TextView) findViewById(R.id.titleDetails);
+        Window window = RecipeDetails.this.getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+// finally change the color             w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        //window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        window.setStatusBarColor(ContextCompat.getColor(RecipeDetails.this,R.color.colorBlueLight));
+
 
         titleIngredients = (TextView) findViewById(R.id.title_ingredients);
         titleIngredients.setShadowLayer(5, 0, 0, Color.BLACK);
@@ -102,11 +113,13 @@ public class RecipeDetails extends AppCompatActivity {
 
 
         if (r.getUrlImage() != "") {
-            with(RecipeDetails.this).load(url).resize(720, 600).centerInside().into(cappImage);
+            with(RecipeDetails.this).load(url).resize(720, 600).centerInside().placeholder(R.drawable.icecreamholder).error(R.drawable.icecreamholdererror).into(cappImage);
         }
 
         Log.d("CHECK_RECIPES","START");
-        new LoadRecipesPerUser().execute("http://10.0.2.2:8080/");
+
+        new LoadRecipesPerUser().execute("https://mgappssupport.com/");
+        //new LoadRecipesPerUser().execute("http://10.0.2.2:8080/");
         Log.d("CHECK_RECIPES","FINISH");
 
         ingredients_biscuit.setText(Html.fromHtml(r.ingredientsBiscuitToString()));
@@ -145,14 +158,14 @@ public class RecipeDetails extends AppCompatActivity {
 
                 if(canSave.contains("loggedin") && storedRecipe==false){
 
-                    new SaveRecipeProfile().execute("http://10.0.2.2:8080/");
-                    storedRecipe = true;
-                    floatingButton.setImageResource(R.drawable.icecreamchange);
+                    new SaveRecipeProfile().execute("https://mgappssupport.com/");
+                    //new SaveRecipeProfile().execute("http://10.0.2.2:8080/");
+
 
                 }else if(storedRecipe==false){
-                    Toast.makeText(RecipeDetails.this, "Inicia sesión para guardar en favoritos!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(RecipeDetails.this, "Inicia sesión para guardar en \"Mis Recetas\"", Toast.LENGTH_LONG).show();
                 } else{
-                    Toast.makeText(RecipeDetails.this, "Receta ya añadida a tu favoritos!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(RecipeDetails.this, "Receta ya añadida a \"Mis Recetas\"", Toast.LENGTH_LONG).show();
 
                 }
 
@@ -169,15 +182,19 @@ public class RecipeDetails extends AppCompatActivity {
             public void onClick(View v) {
                 Log.d("RATING_INPUT", String.valueOf(r.getRanking()));
 
-                if (!hasVoted) {
+                String canVote = sp.getAll().toString();
+                if (!hasVoted && canVote.contains("loggedin")) {
                     hasVoted=true;
                     //new SaveRating().execute("http://10.0.2.2:8080/");
-                    new SaveRating().execute("http://mgappssupport.com/");
+                    new SaveRating().execute("https://mgappssupport.com/");
                     rating.setIsIndicator(true);
 
 
-                } else {
+                } else if(hasVoted) {
                     Toast.makeText(RecipeDetails.this, "Ya has votado " + rating.getRating() + " estrallas!", Toast.LENGTH_SHORT).show();
+                } else {
+
+                    Toast.makeText(RecipeDetails.this, "Inicia sesión para poder valorar recetas!", Toast.LENGTH_LONG).show();
                 }
 
 
@@ -320,8 +337,9 @@ public class RecipeDetails extends AppCompatActivity {
                 Message msg = handler.obtainMessage();
                 msg.arg1 = 2;
                 handler.sendMessage(msg);
-                pd.dismiss();
+
             }
+            pd.dismiss();
 
         }
     }
@@ -480,8 +498,12 @@ public class RecipeDetails extends AppCompatActivity {
             super.onPostExecute(null);
 
             if(httpResponse.contains("recipeSaved")){
+                storedRecipe = true;
+                floatingButton.setImageResource(R.drawable.icecreamchange);
 
-            }else{
+            }else if(exceptionError){
+                finish();
+
 
             }
 

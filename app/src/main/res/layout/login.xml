@@ -5,118 +5,112 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/appbar"
-        android:layout_width="match_parent"
-        android:layout_height="56dp">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:layout_weight="1"
-            android:background="@android:color/holo_blue_light">
-
-
-        </android.support.v7.widget.Toolbar>
-
-
-
-    </android.support.design.widget.AppBarLayout>
-
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fillViewport="true"
         app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior">
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/userName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/Password"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="15dp"
+                android:ems="10"
+                android:fontFamily="@font/fjalla_one"
+                android:hint="Usuario"
+                android:inputType="textPersonName"
+                android:textAlignment="center" />
+
+            <EditText
+                android:id="@+id/Password"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/userName"
+                android:layout_centerVertical="true"
+                android:ems="10"
+                android:fontFamily="@font/fjalla_one"
+                android:hint="Contraseña"
+                android:inputType="textPassword"
+                android:textAlignment="center" />
+
+            <Button
+                android:id="@+id/signinButton"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/Password"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="18dp"
+                android:fontFamily="@font/fjalla_one"
+                android:text="Iniciar Sesión"
+                android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Menu"
+                android:textColor="@color/cardview_light_background"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/forgotText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/signinButton"
+                android:layout_centerHorizontal="true"
+                android:fontFamily="@font/oswald"
+                android:text="Has olvidado tu contraseña?"
+                android:textAlignment="center" />
+
+            <TextView
+                android:id="@+id/skipText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/forgotText"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="14dp"
+                android:fontFamily="@font/oswald"
+                android:text="Saltar"
+                android:textAlignment="center" />
+
+            <ImageView
+                android:id="@+id/cappcakeLogo"
+                android:layout_width="125dp"
+                android:layout_height="125dp"
+                android:layout_above="@+id/textView3"
+                android:layout_centerHorizontal="true"
+                android:scaleType="centerCrop"
+                app:srcCompat="@drawable/only_logo" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/userName"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="25dp"
+                android:fontFamily="@font/emilys_candy"
+                android:text="CAppCake!"
+                android:textColor="@color/colorWanty"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/registerBtn"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/skipText"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="22dp"
+                android:fontFamily="@font/fjalla_one"
+                android:text="Regístrate!"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:textColor="@color/cardview_light_background" />
+
+        </RelativeLayout>
     </android.support.v4.widget.NestedScrollView>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <EditText
-            android:id="@+id/userName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/Password"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="15dp"
-            android:ems="10"
-            android:fontFamily="@font/fjalla_one"
-            android:hint="Usuario"
-            android:inputType="textPersonName"
-            android:textAlignment="center" />
-
-        <EditText
-            android:id="@+id/Password"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/userName"
-            android:layout_centerVertical="true"
-            android:ems="10"
-            android:fontFamily="@font/fjalla_one"
-            android:hint="Contraseña"
-            android:inputType="textPassword"
-            android:textAlignment="center" />
-
-        <Button
-            android:id="@+id/signinButton"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/Password"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="18dp"
-            android:fontFamily="@font/fjalla_one"
-            android:text="Iniciar Sesión"
-            android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Menu"
-            android:textColor="@color/cardview_light_background"
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/forgotText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/signinButton"
-            android:layout_centerHorizontal="true"
-            android:fontFamily="@font/oswald"
-            android:text="Has olvidado tu contraseña?"
-            android:textAlignment="center" />
-
-        <TextView
-            android:id="@+id/skipText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/forgotText"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="14dp"
-            android:fontFamily="@font/oswald"
-            android:text="Saltar"
-            android:textAlignment="center" />
-
-        <ImageView
-            android:id="@+id/cappcakeLogo"
-            android:layout_width="135dp"
-            android:layout_height="135dp"
-            android:layout_above="@+id/userName"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="9dp"
-            android:scaleType="centerCrop"
-            app:srcCompat="@drawable/login_logo" />
-
-        <Button
-            android:id="@+id/registerBtn"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/skipText"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="22dp"
-            android:fontFamily="@font/fjalla_one"
-            android:text="Regístrate!"
-            android:textAppearance="@style/TextAppearance.AppCompat.Menu"
-            android:textColor="@color/cardview_light_background" />
-
-    </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

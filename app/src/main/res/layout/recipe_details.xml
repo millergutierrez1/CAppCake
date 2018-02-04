@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@android:color/holo_blue_light"
+            android:background="@color/colorWanty"
             android:minHeight="?attr/actionBarSize"
             android:theme="?attr/actionBarTheme">
 
@@ -83,6 +83,7 @@
                             android:id="@+id/capp_image"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:background="@drawable/imageborder"
                             android:layout_below="@+id/titleDetails"
                             android:layout_centerHorizontal="true"
                             android:layout_marginTop="25dp"

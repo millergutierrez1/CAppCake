@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +20,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,7 +49,7 @@ public class MainActivity extends AppCompatActivity
     TextView userName;
     NavHeader nav;
     MenuItem login_logout;
-    boolean rating_asc, rating_desc;
+    boolean rating_asc, rating_desc,refreshedError;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private ArrayList<Recipes> cappList = new ArrayList<>();
@@ -59,6 +62,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        refreshedError = false;
         rating_asc = false;
         rating_desc = false;
         super.onCreate(savedInstanceState);
@@ -68,6 +72,16 @@ public class MainActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        Window window = MainActivity.this.getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+// finally change the color             w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        //window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        window.setStatusBarColor(ContextCompat.getColor(MainActivity.this,R.color.colorBlueLight));
+
+
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -198,10 +212,8 @@ public class MainActivity extends AppCompatActivity
 
     void onItemsLoadComplete() {
 
-        Toast.makeText(this, "Datos Actualizados", Toast.LENGTH_SHORT).show();
-
-        // Stop refresh animation
         Log.d("REFRESHPAGE", "Complete");
+
         mSwipeRefreshLayout.setRefreshing(false);
     }
 
@@ -230,7 +242,7 @@ public class MainActivity extends AppCompatActivity
                 if (msg.arg1 == 1) {
                     Toast.makeText(getApplicationContext(), "Error de Conexión", Toast.LENGTH_LONG).show();
                 } else if (msg.arg1 == 2) {
-                    Toast.makeText(getApplicationContext(), "Usuario/Contraseña erroneo!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Usuario y/o Contraseña Incorrectos!", Toast.LENGTH_LONG).show();
                 }
 
             }
@@ -328,6 +340,7 @@ public class MainActivity extends AppCompatActivity
 
             if (exceptionError) {
                 pd.dismiss();
+                refreshedError=true;
                 finish();
             }
 
